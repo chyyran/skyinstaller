@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using TrailsHelper.ViewModels;
 using TrailsHelper.Views;
 
@@ -17,12 +18,14 @@ namespace TrailsHelper
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                var mainViewModel = new MainWindowViewModel();
+
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(),
+                    DataContext = mainViewModel,
                 };
             }
-
+       
             base.OnFrameworkInitializationCompleted();
         }
     }

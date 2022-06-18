@@ -1,0 +1,27 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="300"
+             xmlns:vm="using:TrailsHelper.ViewModels"
+             x:Class="TrailsHelper.Views.GameDisplay">
+  <Grid>
+    <StackPanel Spacing="5" Width="250" IsVisible="{Binding IsLoaded}" VerticalAlignment="Center">
+      <Panel Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Border CornerRadius="3" ClipToBounds="True" BoxShadow="inset -1 0 1 -1 #10000000, inset -2 0 2 -2 #20000000, inset -6 0 6 -6 #16000000, inset -16 0 16 -16 #16000000">
+          <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding CoverArt}"/>
+        </Border>
+      </Panel>
+      <Label Content="{Binding Title}" HorizontalAlignment="Center"/>
+      <Button Content="{Binding InstallButtonText}" HorizontalAlignment="Center" IsEnabled="{Binding IsInstalled}"/>
+    </StackPanel>
+    <Panel Width="200"  IsVisible="{Binding !IsLoaded}">
+      <ProgressBar Classes="Circle" IsIndeterminate="True">
+        <ProgressBar.Styles>
+          <StyleInclude Source="avares://Material.Styles/ProgressBar.xaml"></StyleInclude>
+        </ProgressBar.Styles>
+      </ProgressBar>
+    </Panel>
+  </Grid>
+
+</UserControl>

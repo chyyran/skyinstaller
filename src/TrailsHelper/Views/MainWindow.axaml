@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TrailsHelper.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+        xmlns:local="using:TrailsHelper.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Height="500" Width="900"
+        MinHeight="450"
+        MinWidth="750"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        x:Class="TrailsHelper.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        ExtendClientAreaToDecorationsHint="True"
+        Title="TrailsHelper - SoraVoice Installer">
+
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+
+  <Grid>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+            BackgroundSource="Digger"
+            FallbackColor="Black"
+            TintColor="Black"
+            TintOpacity="1"
+            MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+    
+    <StackPanel VerticalAlignment="Center">
+      <StackPanel IsVisible="{Binding !SteamApiReady}"  HorizontalAlignment="Center" VerticalAlignment="Center">
+        <ProgressBar Classes="Circle" IsIndeterminate="True">
+          <ProgressBar.Styles>
+            <StyleInclude Source="avares://Material.Styles/ProgressBar.xaml"></StyleInclude>
+          </ProgressBar.Styles>
+        </ProgressBar>
+        <Label>Waiting for Steam...</Label>
+      </StackPanel>
+      <StackPanel IsVisible="{Binding SteamApiReady}"  VerticalAlignment="Center" HorizontalAlignment="Center">
+        <WrapPanel HorizontalAlignment="Center">
+          <local:GameDisplay DataContext="{Binding ContextFC}"></local:GameDisplay>
+          <local:GameDisplay DataContext="{Binding ContextSC}"></local:GameDisplay>
+          <local:GameDisplay DataContext="{Binding Context3rd}"></local:GameDisplay>
+        </WrapPanel>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+
+</Window>

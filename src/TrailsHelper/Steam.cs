@@ -30,6 +30,11 @@ namespace TrailsHelper
             });
         }
 
+        public static void Shutdown()
+        {
+            Steamworks.SteamClient.Shutdown();
+        }
+
         public static string? GetSteamPath()
         {
             // todo: linux?
@@ -47,7 +52,7 @@ namespace TrailsHelper
 
             return Task.Run(() =>
             {
-                while (!Process.GetProcessesByName("steamwebhelper").Any())
+                while (!Process.GetProcessesByName("steam").Any())
                 {
                     Thread.Sleep(1);
                 }
