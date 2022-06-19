@@ -17,7 +17,7 @@
         ExtendClientAreaToDecorationsHint="True"
         Title="Skyinstaller">
   
-  <Grid>
+  <Grid ShowGridLines="True">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
         <ExperimentalAcrylicMaterial
@@ -43,8 +43,8 @@
         <ColumnDefinition Width="300"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
-
-      <StackPanel Grid.Column="0" Spacing="5" Width="250" VerticalAlignment="Center">
+   
+      <StackPanel Grid.Column="0" Spacing="5" VerticalAlignment="Center">
         <Panel IsVisible="{Binding GameModel.IsLoaded}" Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
           <Border CornerRadius="3" ClipToBounds="True" BoxShadow="inset -1 0 1 -1 #10000000, inset -2 0 2 -2 #20000000, inset -6 0 6 -6 #16000000, inset -16 0 16 -16 #16000000">
             <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding GameModel.CoverArt}"/>
@@ -53,10 +53,39 @@
         <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center"/>
         <Button HorizontalAlignment="Center" Background="DarkGray" IsEnabled="False">Install</Button>
       </StackPanel>
-      <StackPanel Margin="30 40 0 00" Grid.Column="1">
-        <Label Content="{Binding GameModel.Path}"/>
-        
-      </StackPanel>
+      
+      <Grid Margin="20 30 0 10" Grid.Column="1" HorizontalAlignment="Stretch" Grid.ColumnSpan="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+          <Label Content="{Binding GameModel.Path}"/>
+          <StackPanel Orientation="Horizontal">
+            <Label>Voice Files</Label>
+            <Button>Browse...</Button>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <Label>Battle Voices DIR</Label>
+            <Button>Browse...</Button>
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <Label>Battle Voices DAT</Label>
+            <Button>Browse...</Button>
+          </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <Label Grid.Column="0">Requires Voice Files..</Label>
+          <ProgressBar Margin="10 0 20 0" Grid.Column="1" HorizontalAlignment="Stretch"></ProgressBar>
+
+        </Grid>
+
+      </Grid>
     </Grid>
   </Grid>
 </Window>
