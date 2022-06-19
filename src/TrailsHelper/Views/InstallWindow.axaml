@@ -11,6 +11,7 @@
         Height="450" Width="800"
         MinHeight="450"
         MinWidth="750"
+        MaxHeight="450"
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         Icon="/Assets/avalonia-logo.ico"
@@ -51,7 +52,8 @@
           </Border>
         </Panel>
         <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center"/>
-        <Button HorizontalAlignment="Center" Background="DarkGray" IsEnabled="False">Install</Button>
+        <Button HorizontalAlignment="Center" 
+                Background="Black" Command="{Binding InstallCommand}">Install</Button>
       </StackPanel>
       
       <Grid Margin="20 30 0 10" Grid.Column="1" HorizontalAlignment="Stretch" Grid.ColumnSpan="2">
@@ -60,31 +62,23 @@
           <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <StackPanel>
-          <Label Content="{Binding GameModel.Path}"/>
-          <StackPanel Orientation="Horizontal">
-            <Label>Voice Files</Label>
-            <Button>Browse...</Button>
-          </StackPanel>
-          <StackPanel Orientation="Horizontal">
-            <Label>Battle Voices DIR</Label>
-            <Button>Browse...</Button>
-          </StackPanel>
-          <StackPanel Orientation="Horizontal">
-            <Label>Battle Voices DAT</Label>
-            <Button>Browse...</Button>
-          </StackPanel>
+          <Label>Installing to</Label>
+          <Label Margin="0 0 0 20" Content="{Binding GameModel.Path}"/>
+          <Label>Installation will depend on your internet speed.</Label>
+          <Label>Please do not close this window while installing.</Label>
         </StackPanel>
-
+      
         <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
-          <Label Grid.Column="0">Requires Voice Files..</Label>
-          <ProgressBar Margin="10 0 20 0" Grid.Column="1" HorizontalAlignment="Stretch"></ProgressBar>
+          <Label Grid.Column="0" Content="{Binding Status}"/>
+          <ProgressBar Margin="10 0 20 0" Grid.Column="1" HorizontalAlignment="Stretch" 
+                       Value="{Binding ProgressValue}"
+                       IsIndeterminate="{Binding ProgressIndeterminate}"></ProgressBar>
 
         </Grid>
-
       </Grid>
     </Grid>
   </Grid>

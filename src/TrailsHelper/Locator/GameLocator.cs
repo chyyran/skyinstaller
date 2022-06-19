@@ -9,19 +9,21 @@ namespace TrailsHelper
 {
     public sealed class GameLocator
     {
-        public static readonly GameLocator TRAILS_IN_THE_SKY_FC = new("Trails in the Sky", 251150);
-        public static readonly GameLocator TRAILS_IN_THE_SKY_SC = new("Trails in the Sky SC", 251290);
-        public static readonly GameLocator TRAILS_IN_THE_SKY_3RD = new("Trails in the Sky the 3rd", 436670);
+        public static readonly GameLocator TRAILS_IN_THE_SKY_FC = new("Trails in the Sky", "en.fc", 251150);
+        public static readonly GameLocator TRAILS_IN_THE_SKY_SC = new("Trails in the Sky SC", "en.sc", 251290);
+        public static readonly GameLocator TRAILS_IN_THE_SKY_3RD = new("Trails in the Sky the 3rd", "en.3rd", 436670);
 
-        private GameLocator(string name, uint appid)
+        private GameLocator(string name, string prefix, uint appid)
         {
             this.Name = name;
+            this.Prefix = prefix;
             this.AppId = new() { Value = appid };
         }
 
         public string Name { get; }
         public AppId AppId { get; }
-    
+        public string Prefix { get; }
+
         public bool IsInstalled()
         {
             return SteamApps.IsAppInstalled(this.AppId);

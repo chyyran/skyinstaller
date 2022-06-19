@@ -27,5 +27,7 @@ namespace TrailsHelper.Models
         }
 
         public string Title => this.Locator.Name;
+
+        public string Prefix => this.Locator.Prefix;
     }
 }

@@ -22,7 +22,7 @@ namespace TrailsHelper.ViewModels
         {
             _game = model;
             _installButtonText = this.WhenAnyValue(x => x.IsInstalled)
-                .Select(x => x ? "Install SoraVoice" : "Game not installed")
+                .Select(x => x ? "Install Voice Patches" : "Game not installed")
                 .ToProperty(this, x => x.InstallButtonText);
             this.ShowInstallDialog = new();
             this.InstallForGameCommand = ReactiveCommand.CreateFromTask(async () =>
@@ -53,6 +53,8 @@ namespace TrailsHelper.ViewModels
         public string InstallButtonText => _installButtonText.Value;
 
         public string Title => _game.Title;
+
+        public string Prefix => _game.Prefix;
 
         private async Task LoadCover()
         {
