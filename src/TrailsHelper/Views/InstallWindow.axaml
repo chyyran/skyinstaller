@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TrailsHelper.ViewModels"
+        xmlns:local="using:TrailsHelper.Views"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+         x:Class="TrailsHelper.Views.InstallWindow"
+
+        Height="450" Width="800"
+        MinHeight="450"
+        MinWidth="750"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        Icon="/Assets/avalonia-logo.ico"
+        ExtendClientAreaToDecorationsHint="True"
+        Title="Skyinstaller">
+  
+  <Grid>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+            BackgroundSource="Digger"
+            FallbackColor="Black"
+            TintColor="Black"
+            TintOpacity="1"
+            MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+    <Grid>
+      <ExperimentalAcrylicBorder IsHitTestVisible="False">
+        <ExperimentalAcrylicBorder.Material>
+          <ExperimentalAcrylicMaterial
+              BackgroundSource="Digger"
+              FallbackColor="Black"
+              TintColor="White"
+              TintOpacity="0"
+              MaterialOpacity="0.65" />
+        </ExperimentalAcrylicBorder.Material>
+      </ExperimentalAcrylicBorder>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="300"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <StackPanel Grid.Column="0" Spacing="5" Width="250" VerticalAlignment="Center">
+        <Panel IsVisible="{Binding GameModel.IsLoaded}" Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
+          <Border CornerRadius="3" ClipToBounds="True" BoxShadow="inset -1 0 1 -1 #10000000, inset -2 0 2 -2 #20000000, inset -6 0 6 -6 #16000000, inset -16 0 16 -16 #16000000">
+            <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding GameModel.CoverArt}"/>
+          </Border>
+        </Panel>
+        <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center"/>
+        <Button HorizontalAlignment="Center" Background="DarkGray" IsEnabled="False">Install</Button>
+      </StackPanel>
+      <StackPanel Margin="30 40 0 00" Grid.Column="1">
+        <Label Content="{Binding GameModel.Path}"/>
+        
+      </StackPanel>
+    </Grid>
+  </Grid>
+</Window>

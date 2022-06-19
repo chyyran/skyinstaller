@@ -45,16 +45,16 @@ namespace TrailsHelper
         public static Task StartSteam()
         {
             var steamPath = GetSteamPath();
-            var process = Process.Start(new ProcessStartInfo(steamPath)
-            {
-                Arguments = "-silent"
-            });
-
+  
             return Task.Run(() =>
             {
                 while (!Process.GetProcessesByName("steam").Any())
                 {
-                    Thread.Sleep(1);
+                    var process = Process.Start(new ProcessStartInfo(steamPath)
+                    {
+                        Arguments = "-silent"
+                    });
+                    Thread.Sleep(100);
                 }
             });
         }

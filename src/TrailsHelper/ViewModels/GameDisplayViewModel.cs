@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,12 +15,22 @@ namespace TrailsHelper.ViewModels
     {
         GameModel _game;
 
+        public ReactiveCommand<Unit, GameDisplayViewModel> InstallForGameCommand { get; }
+        public Interaction<InstallViewModel, Unit> ShowInstallDialog { get; }
+
         public GameDisplayViewModel(Models.GameModel model)
         {
             _game = model;
             _installButtonText = this.WhenAnyValue(x => x.IsInstalled)
                 .Select(x => x ? "Install SoraVoice" : "Game not installed")
                 .ToProperty(this, x => x.InstallButtonText);
+            this.ShowInstallDialog = new();
+            this.InstallForGameCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                var install = new InstallViewModel(this);
+                var result = await ShowInstallDialog.Handle(install);
+                return this;
+            });
         }
 
         private Bitmap? _cover;
@@ -35,14 +46,11 @@ namespace TrailsHelper.ViewModels
         private bool _isLoaded = false;
         public bool IsLoaded { get => _isLoaded; set => this.RaiseAndSetIfChanged(ref _isLoaded, value); }
 
-        private string? _path = "Game not found.";
+        private string _path = "Game not found.";
         public string Path { get => _path; set => this.RaiseAndSetIfChanged(ref _path, value); }
 
         readonly ObservableAsPropertyHelper<string> _installButtonText;
-        public string InstallButtonText
-        {
-            get { return _installButtonText.Value; }
-        }
+        public string InstallButtonText => _installButtonText.Value;
 
         public string Title => _game.Title;
 
