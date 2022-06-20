@@ -76,16 +76,13 @@ namespace TrailsHelper.ViewModels
             var torrent = await client.DownloadTorrentInfo(manifest, cancel);
             cancel.ThrowIfCancellationRequested();
 
-
             this.Status = "Downloading voice data...";
             var voiceArchive = await client.DownloadVoiceTorrent(manifest, torrent!, cancel);
             cancel.ThrowIfCancellationRequested();
 
-
             this.Status = "Extracting voice data...";
             await client.ExtractToVoiceFolder(voiceArchive, cancel);
             cancel.ThrowIfCancellationRequested();
-
 
             this.Status = "Downloading battle voices...";
             await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);

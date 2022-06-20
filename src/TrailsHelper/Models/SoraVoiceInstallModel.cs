@@ -43,7 +43,7 @@ namespace TrailsHelper.Models
             this.HttpClient = new HttpClient(ph);
             this.TorrentClient = new ClientEngine(new EngineSettingsBuilder()
             {
-                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache_{this.ScriptPrefix}"),                
+                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache_{this.ScriptPrefix}"),
             }.ToSettings());
         }
 
@@ -121,7 +121,8 @@ namespace TrailsHelper.Models
                 new TorrentSettingsBuilder()
                 {
                     CreateContainingDirectory = false,
-                    
+                    WebSeedDelay = TimeSpan.Zero,
+                    WebSeedSpeedTrigger = 0,
                 }.ToSettings());
             this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
 
