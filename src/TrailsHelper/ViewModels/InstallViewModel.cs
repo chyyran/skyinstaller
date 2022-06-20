@@ -130,6 +130,18 @@ namespace TrailsHelper.ViewModels
                     this.CancelInstall();
                     return false;
                 }
+                catch (Octokit.RateLimitExceededException)
+                {
+                    this.Status = "GitHub rate limit exceeded";
+                    this.CancelInstall();
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    this.Status = $"Unknown error: {e.GetType().Name}";
+                    this.CancelInstall();
+                    return false;
+                }
                 finally
                 {
                     this.IsInProgress = false;
