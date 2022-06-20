@@ -3,6 +3,8 @@ SkyInstaller
 
 1-click installer for the Evolution voice mod for the *Trails in the Sky* series.
 
+![Screenshot 2022-06-20 140057](https://user-images.githubusercontent.com/1000503/174656943-e1f63a91-376b-4087-97f9-cda95e57b617.png)
+
 Usage
 -----
 
