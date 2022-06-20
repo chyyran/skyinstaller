@@ -24,8 +24,8 @@ namespace TrailsHelper.ViewModels
         }
 
 
-        private string _downloadStatus;
-        public string Status
+        private string? _downloadStatus;
+        public string? Status
         {
             get => _downloadStatus;
             private set => this.RaiseAndSetIfChanged(ref _downloadStatus, value);

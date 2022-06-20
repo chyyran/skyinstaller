@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Steamworks;
-namespace TrailsHelper
+namespace TrailsHelper.Support
 {
     public sealed class GameLocator
     {

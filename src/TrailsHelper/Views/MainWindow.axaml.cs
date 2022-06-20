@@ -13,13 +13,13 @@ namespace TrailsHelper.Views
         public MainWindow()
         {
             InitializeComponent();
-            this.WhenActivated(d => d(this.ViewModel.WhenAnyValue(x => x.SteamApiReady)
+            this.WhenActivated(d => d(this.ViewModel.WhenAnyValue(x => x!.SteamApiReady)
                 .Where(x => x)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(this.OnSteamReady!)));
         }
 
-        public async void OnSteamReady(bool s)
+        public void OnSteamReady(bool s)
         {
             this.Activate();
         }

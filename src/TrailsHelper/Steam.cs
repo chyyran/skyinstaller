@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,16 +38,24 @@ namespace TrailsHelper
 
         public static string? GetSteamPath()
         {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Valve\\Steam");
+                return key?.GetValue("SteamExe") as string;
+            }
             // todo: linux?
-            var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Valve\\Steam");
-            return key?.GetValue("SteamExe") as string;
+            throw new PlatformNotSupportedException();
         }
 
-        public static Task StartSteam()
+        public static async Task StartSteam()
         {
             var steamPath = GetSteamPath();
   
-            return Task.Run(() =>
+            if (steamPath == null) {
+                return;
+            }
+
+            await Task.Run(() =>
             {
                 while (!Process.GetProcessesByName("steam").Any())
                 {

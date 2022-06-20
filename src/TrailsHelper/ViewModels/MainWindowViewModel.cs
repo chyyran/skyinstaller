@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TrailsHelper.Models;
+using TrailsHelper.Support;
 
 namespace TrailsHelper.ViewModels
 {

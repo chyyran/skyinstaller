@@ -8,15 +8,14 @@
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
          x:Class="TrailsHelper.Views.InstallWindow"
         WindowStartupLocation="CenterOwner"
-
-        Height="450" Width="900"
-        MinHeight="450"
-        MinWidth="750"
-        MaxHeight="450"
+        Height="500" Width="900"
+        MinHeight="500"
+        MinWidth="900"
+        MaxHeight="500"
         MaxWidth="900"
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/fc_config.ico"
         ExtendClientAreaToDecorationsHint="True"
         Title="{Binding WindowTitle}">
   
@@ -70,7 +69,7 @@
           <Label Margin="0 0 0 20" Content="{Binding GameModel.Path}"/>
           <Label>Installation will depend on your internet speed.</Label>
           <Label>Once installation begins, it can not be paused.</Label>
-          <Label>Please do not close this window during installation.</Label>
+          <Label>After starting installation, this window can be closed after installation completes.</Label>
           <Label Margin="0 20 0 0">Downloading voice data will take a while.</Label>
         </StackPanel>
       
@@ -82,8 +81,7 @@
           </Grid.ColumnDefinitions>
           <Label Grid.Column="0" Content="{Binding Status}"/>
           <ProgressBar Grid.Column="1" Margin="10 0 10 0" HorizontalAlignment="Stretch" 
-                       Value="{Binding ProgressValue}"
-                      ></ProgressBar>
+                       Value="{Binding ProgressValue}"></ProgressBar>
           <Label Grid.Column="2" Margin="0 0 20 0" Content="{Binding ProgressPercentString}"/>
 
         </Grid>

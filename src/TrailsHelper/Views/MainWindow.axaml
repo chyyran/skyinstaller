@@ -12,7 +12,7 @@
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         x:Class="TrailsHelper.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/fc_config.ico"
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
         Title="Skyinstaller">

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TrailsHelper.Support;
 
 namespace TrailsHelper.Models
 {
@@ -12,7 +13,7 @@ namespace TrailsHelper.Models
     {
         public GameLocator Locator { get; }
 
-        private static HttpClient httpClient = new();
+        private static readonly HttpClient httpClient = new();
 
         public GameModel(GameLocator locator, string scriptPrefix, string battleVoiceFname)
         {

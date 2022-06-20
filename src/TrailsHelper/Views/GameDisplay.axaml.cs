@@ -20,10 +20,12 @@ namespace TrailsHelper.Views
 
         private async Task DoShowInstallDialogAsync(InteractionContext<InstallViewModel, Unit> interaction)
         {
-            var dialog = new InstallWindow();
-            dialog.DataContext = interaction.Input;
+            var dialog = new InstallWindow
+            {
+                DataContext = interaction.Input
+            };
 
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 var result = await dialog.ShowDialog<Unit>(desktop.MainWindow);
             }

@@ -11,6 +11,8 @@ using SharpCompress.Readers;
 using MonoTorrent;
 using MonoTorrent.Client;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
+using TrailsHelper.Support;
 
 namespace TrailsHelper.Models
 {
@@ -56,7 +58,7 @@ namespace TrailsHelper.Models
         public async Task<DownloadManifest> DownloadManifest()
         {
             var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri);
-            var manifest = await JsonSerializer.DeserializeAsync<DownloadManifest>(stream);
+            var manifest = await JsonSerializer.DeserializeAsync(stream, JsonContext.Default.DownloadManifest);
             return manifest!;
         }
 
