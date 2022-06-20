@@ -13,6 +13,7 @@ using MonoTorrent.Client;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using TrailsHelper.Support;
+using System.Threading;
 
 namespace TrailsHelper.Models
 {
@@ -42,7 +43,7 @@ namespace TrailsHelper.Models
             this.HttpClient = new HttpClient(ph);
             this.TorrentClient = new ClientEngine(new EngineSettingsBuilder()
             {
-                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache_{this.ScriptPrefix}"),
+                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache_{this.ScriptPrefix}"),                
             }.ToSettings());
         }
 
@@ -55,51 +56,63 @@ namespace TrailsHelper.Models
 
         public event EventHandler<double>? ProgressChangedEvent;
 
-        public async Task<DownloadManifest> DownloadManifest()
+        public async Task<DownloadManifest> DownloadManifest(CancellationToken cancel = default)
         {
-            var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri);
+            var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri, cancel);
+            cancel.ThrowIfCancellationRequested();
+
             var manifest = await JsonSerializer.DeserializeAsync(stream, JsonContext.Default.DownloadManifest);
             return manifest!;
         }
 
-        public async Task<Stream> DownloadLatestMod(DownloadManifest manifest)
+        public async Task<Stream> DownloadLatestMod(DownloadManifest manifest, CancellationToken cancel = default)
         {
             var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Mod.Owner, manifest.Mod.Repository);
             var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Mod.Asset.FormatTemplateString(this)));
-            var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl);
+            var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl, cancel);
+            cancel.ThrowIfCancellationRequested();
+
             var outStream = new MemoryStream();
             await stream.CopyToAsync(outStream);
             await outStream.FlushAsync();
             return outStream;
         }
 
-        public async Task<Stream> DownloadLatestScripts(DownloadManifest manifest)
+        public async Task<Stream> DownloadLatestScripts(DownloadManifest manifest, CancellationToken cancel = default)
         {
             var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Scripts.Owner, manifest.Scripts.Repository);
             var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Scripts.Asset.FormatTemplateString(this)));
             var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl);
+            cancel.ThrowIfCancellationRequested();
+            
             var outStream = new MemoryStream();
-            await stream.CopyToAsync(outStream);
-            await outStream.FlushAsync();
+            await stream.CopyToAsync(outStream, cancel);
+            await outStream.FlushAsync(cancel);
             return outStream;
         }
 
-        public async Task DownloadAndInstallBattleVoice(DownloadManifest manifest, string ext)
+        public async Task DownloadAndInstallBattleVoice(DownloadManifest manifest, string ext, CancellationToken cancel = default)
         {
-            var stream = await this.HttpClient.GetStreamAsync(manifest.Battle.Uri.FormatTemplateString(this).Replace("$ext", ext));
+            var stream = await this.HttpClient.GetStreamAsync(manifest.Battle.Uri.FormatTemplateString(this).Replace("$ext", ext), cancel);
+            cancel.ThrowIfCancellationRequested();
+
             using var outStream = File.Open(Path.Combine(this.GamePath, $"{this.BattleVoiceFile}.{ext}"), System.IO.FileMode.Create);
-            await stream.CopyToAsync(outStream);
-            await outStream.FlushAsync();
+            await stream.CopyToAsync(outStream, cancel);
+            await outStream.FlushAsync(cancel);
             return;
         }
 
-        public async Task<TorrentManager> StartDownloadTorrent(DownloadManifest manifest)
+        public async Task<TorrentManager> DownloadTorrentInfo(DownloadManifest manifest, CancellationToken cancel = default)
         {
             // http stream can't use random access.
-            var torrentStreamHttp = await this.HttpClient.GetStreamAsync(manifest.Voice.Uri);
+            var torrentStreamHttp = await this.HttpClient.GetStreamAsync(manifest.Voice.Uri, cancel);
+            cancel.ThrowIfCancellationRequested();
+
             using var torrentStream = new MemoryStream();
-            await torrentStreamHttp.CopyToAsync(torrentStream);
-            await torrentStream.FlushAsync();
+            await torrentStreamHttp.CopyToAsync(torrentStream, cancel);
+            await torrentStream.FlushAsync(cancel);
+            cancel.ThrowIfCancellationRequested();
+
             torrentStream.Seek(0, SeekOrigin.Begin);
 
             var torrent = await this.TorrentClient.AddAsync(
@@ -108,6 +121,7 @@ namespace TrailsHelper.Models
                 new TorrentSettingsBuilder()
                 {
                     CreateContainingDirectory = false,
+                    
                 }.ToSettings());
             this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
 
@@ -120,11 +134,11 @@ namespace TrailsHelper.Models
                 }
             }
             await torrent.StartAsync();
-            await torrent.WaitForMetadataAsync();
+            await torrent.WaitForMetadataAsync(cancel);
             return torrent;
         }
 
-        public async Task<Stream> DownloadVoiceTorrent(DownloadManifest manifest, TorrentManager torrent)
+        public async Task<Stream> DownloadVoiceTorrent(DownloadManifest manifest, TorrentManager torrent, CancellationToken cancel = default)
         {
             var asset = manifest.Voice.Asset.FormatTemplateString(this);
 
@@ -132,7 +146,17 @@ namespace TrailsHelper.Models
             {
                 while (torrent.State != TorrentState.Stopped && torrent.State != TorrentState.Paused && torrent.State != TorrentState.Seeding)
                 {
-                    await Task.Delay(1000);
+                    if (cancel.IsCancellationRequested)
+                    {
+                        await torrent.StopAsync();
+                        cancel.ThrowIfCancellationRequested();
+                    }
+
+                    await Task.Delay(500);
+                    if (torrent.Peers.Seeds == 0)
+                    {
+                        await torrent.TrackerManager.AnnounceAsync(cancel);
+                    }
                     this.ProgressChangedEvent?.Invoke(this, torrent.PartialProgress);
                 }
 
@@ -141,7 +165,7 @@ namespace TrailsHelper.Models
             });
         }
 
-        public async Task ExtractToGameRoot(Stream modStream)
+        public async Task ExtractToGameRoot(Stream modStream, CancellationToken cancel = default)
         {
             var archive = ArchiveFactory.Open(modStream);
             using var reader = archive.ExtractAllEntries();
@@ -149,12 +173,21 @@ namespace TrailsHelper.Models
             long bytesUncompressed = 0;
             reader.EntryExtractionProgress += (_, args) =>
             {
+                if (cancel.IsCancellationRequested)
+                {
+                    reader.Cancel();
+                }
                 bytesUncompressed += args.ReaderProgress?.BytesTransferred ?? 0;
                 this.ProgressChangedEvent?.Invoke(this, bytesUncompressed / (double)totalSize);
             };
 
             await Task.Run(() =>
             {
+                if (cancel.IsCancellationRequested)
+                {
+                    reader.Cancel();
+                }
+
                 reader.WriteAllToDirectory(this.GamePath, new()
                 {
                     ExtractFullPath = true,
@@ -163,7 +196,7 @@ namespace TrailsHelper.Models
             });
         }
 
-        public async Task ExtractToVoiceFolder(Stream modStream)
+        public async Task ExtractToVoiceFolder(Stream modStream, CancellationToken cancel = default)
         {
     
             var archive = ArchiveFactory.Open(modStream);
@@ -172,6 +205,10 @@ namespace TrailsHelper.Models
             long bytesUncompressed = 0;
             reader.EntryExtractionProgress += (_, args) =>
             {
+                if (cancel.IsCancellationRequested)
+                {
+                    reader.Cancel();
+                }
                 bytesUncompressed += args.ReaderProgress?.BytesTransferred ?? 0;
                 this.ProgressChangedEvent?.Invoke(this, bytesUncompressed / (double)totalSize);
             };

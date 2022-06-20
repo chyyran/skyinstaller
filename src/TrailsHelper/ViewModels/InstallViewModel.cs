@@ -1,13 +1,16 @@
 ﻿using ReactiveUI;
+using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using TrailsHelper.Models;
 namespace TrailsHelper.ViewModels
 {
     public class InstallViewModel : ViewModelBase
     {
-        public ReactiveCommand<Unit, Unit> InstallCommand { get; }
+        public ReactiveCommand<Unit, bool> InstallCommand { get; }
 
         private double _progressValue;
         public double ProgressValue
@@ -37,6 +40,64 @@ namespace TrailsHelper.ViewModels
 
         public string WindowTitle { get; }
 
+        public CancellationTokenSource InstallCancel { get; private set; } = new();
+
+        private bool CancelInstall()
+        {
+            this.GameModel.Game.Clean();
+            return false;
+        }
+
+        private async Task<bool> DoInstall(SoraVoiceInstallModel client, CancellationToken cancel)
+        {
+            this.Status = "Downloading manifest...";
+            var manifest = await client.DownloadManifest(cancel);
+            cancel.ThrowIfCancellationRequested();
+
+            this.Status = "Downloading SoraVoiceLite...";
+            var modArchive = await client.DownloadLatestMod(manifest, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+
+            this.Status = "Extracting SoraVoiceLite...";
+            await client.ExtractToGameRoot(modArchive!, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+
+            this.Status = "Downloading script files...";
+            var scriptArchive = await client.DownloadLatestScripts(manifest, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+            this.Status = "Extracting scripts...";
+            await client.ExtractToVoiceFolder(scriptArchive, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+            this.Status = "Downloading metadata...";
+            var torrent = await client.DownloadTorrentInfo(manifest, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+
+            this.Status = "Downloading voice data...";
+            var voiceArchive = await client.DownloadVoiceTorrent(manifest, torrent!, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+
+            this.Status = "Extracting voice data...";
+            await client.ExtractToVoiceFolder(voiceArchive, cancel);
+            cancel.ThrowIfCancellationRequested();
+
+
+            this.Status = "Downloading battle voices...";
+            await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
+            cancel.ThrowIfCancellationRequested();
+
+
+            await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
+            cancel.ThrowIfCancellationRequested();
+
+            return true;
+        }
+
         public InstallViewModel(GameDisplayViewModel gameModel)
         {
             this.GameModel = gameModel;
@@ -53,35 +114,30 @@ namespace TrailsHelper.ViewModels
                 using var client = new SoraVoiceInstallModel(gameModel.Prefix, gameModel.Path, gameModel.BattleVoiceFile);
                 client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
 
-                this.Status = "Downloading manifest...";
-                var manifest = await client.DownloadManifest();
-
-                this.Status = "Downloading SoraVoiceLite...";
-                var modArchive = await client.DownloadLatestMod(manifest);
-                this.Status = "Extracting SoraVoiceLite...";
-                await client.ExtractToGameRoot(modArchive);
-
-                this.Status = "Downloading script files...";
-                var scriptArchive = await client.DownloadLatestScripts(manifest);
-                this.Status = "Extracting scripts...";
-                await client.ExtractToVoiceFolder(scriptArchive);
-
-                this.Status = "Downloading battle voices...";
-                await client.DownloadAndInstallBattleVoice(manifest, "dir");
-                await client.DownloadAndInstallBattleVoice(manifest, "dat");
-
-                this.Status = "Downloading metadata...";
-                var torrent = await client.StartDownloadTorrent(manifest);
-
-                this.Status = "Downloading voice data...";
-                var voiceArchive = await client.DownloadVoiceTorrent(manifest, torrent);
-
-                this.Status = "Extracting voice data...";
-                await client.ExtractToVoiceFolder(voiceArchive);
-
-                this.Status = "Done";
-                this.IsInProgress = false;
-                return Unit.Default;
+                var cancel = this.InstallCancel.Token;
+                try
+                {
+                    var result = await this.DoInstall(client, cancel);
+                    this.Status = "Installation complete";
+                    return result;
+                } 
+                catch (TaskCanceledException)
+                {
+                    this.Status = "Installation cancelled";
+                    this.CancelInstall();
+                    return false;
+                }
+                catch (OperationCanceledException)
+                {
+                    this.Status = "Installation cancelled";
+                    this.CancelInstall();
+                    return false;
+                }
+                finally
+                {
+                    this.IsInProgress = false;
+                    this.InstallCancel = new();
+                }
             });
         }
 

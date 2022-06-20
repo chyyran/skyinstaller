@@ -31,11 +31,6 @@ namespace TrailsHelper
             });
         }
 
-        public static void Shutdown()
-        {
-            Steamworks.SteamClient.Shutdown();
-        }
-
         public static string? GetSteamPath()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

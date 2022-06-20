@@ -65,12 +65,13 @@
           <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <StackPanel>
-          <Label>Installing to</Label>
-          <Label Margin="0 0 0 20" Content="{Binding GameModel.Path}"/>
-          <Label>Installation will depend on your internet speed.</Label>
-          <Label>Once installation begins, it can not be paused.</Label>
-          <Label>After starting installation, this window can be closed after installation completes.</Label>
+          <Label>Installing voice lines and battle voices to</Label>
+          <Label Margin="0 0 0 30" Content="{Binding GameModel.Path}"/>
+          <Label>Installation time will depend on your internet speed.</Label>
+          <Label>Closing this window will cancel the installation and revert any changes.</Label>
           <Label Margin="0 20 0 0">Downloading voice data will take a while.</Label>
+          <Label>If the voice data download freezes, cancel installation and try again.</Label>
+          <Label>The download will resume from where it left off.</Label>
         </StackPanel>
       
         <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">

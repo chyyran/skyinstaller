@@ -45,7 +45,6 @@ namespace TrailsHelper.ViewModels
             await this.ContextFC.Load();
             await this.ContextSC.Load();
             await this.Context3rd.Load();
-            Steam.Shutdown();
         }
     }
 }

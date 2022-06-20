@@ -14,9 +14,9 @@ namespace TrailsHelper.ViewModels
     public class GameDisplayViewModel : ViewModelBase
     {
         GameModel _game;
-
+        public GameModel Game => _game;
         public ReactiveCommand<Unit, GameDisplayViewModel> InstallForGameCommand { get; }
-        public Interaction<InstallViewModel, Unit> ShowInstallDialog { get; }
+        public Interaction<InstallViewModel, bool> ShowInstallDialog { get; }
 
         public GameDisplayViewModel(Models.GameModel model)
         {

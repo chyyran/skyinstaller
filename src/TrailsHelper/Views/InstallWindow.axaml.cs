@@ -1,7 +1,12 @@
+using ReactiveUI;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using TrailsHelper.ViewModels;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 
 namespace TrailsHelper.Views
 {
@@ -16,9 +21,34 @@ namespace TrailsHelper.Views
 #endif
         }
 
-        private void InstallWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        private async void InstallWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = this.ViewModel!.IsInProgress;
+            if (!this.ViewModel!.IsInProgress)
+            {
+                return;
+            }
+            e.Cancel = true;
+
+            var result = await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new()
+            {
+                ContentTitle = "Cancel installation?", 
+                ContentMessage = "Are you sure you want to cancel the installation?",
+                ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
+                WindowIcon = this.Icon,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                HasSystemDecorations = false,
+            }).ShowDialog(this);
+
+
+            if (result != MessageBox.Avalonia.Enums.ButtonResult.Yes)
+            {
+                e.Cancel = true;
+            }
+            else
+            {
+                e.Cancel = false;
+                this.ViewModel!.InstallCancel.Cancel();
+            }
         }
 
         private void InitializeComponent()

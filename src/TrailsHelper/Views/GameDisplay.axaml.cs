@@ -18,7 +18,7 @@ namespace TrailsHelper.Views
             this.WhenActivated(d => d(this.ViewModel!.ShowInstallDialog.RegisterHandler(DoShowInstallDialogAsync)));
         }
 
-        private async Task DoShowInstallDialogAsync(InteractionContext<InstallViewModel, Unit> interaction)
+        private async Task DoShowInstallDialogAsync(InteractionContext<InstallViewModel, bool> interaction)
         {
             var dialog = new InstallWindow
             {
@@ -27,10 +27,9 @@ namespace TrailsHelper.Views
 
             if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var result = await dialog.ShowDialog<Unit>(desktop.MainWindow);
+                var result = await dialog.ShowDialog<bool>(desktop.MainWindow);
+                interaction.SetOutput(result);
             }
-
-            interaction.SetOutput(Unit.Default);
         }
         private void InitializeComponent()
         {
