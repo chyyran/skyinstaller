@@ -15,7 +15,7 @@
         Icon="/Assets/fc_config.ico"
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
-        Title="Skyinstaller">
+        Title="SkyInstaller">
 
   <Design.DataContext>
     <vm:MainWindowViewModel/>
