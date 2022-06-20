@@ -14,10 +14,11 @@ namespace TrailsHelper.Models
 
         private static HttpClient httpClient = new();
 
-
-        public GameModel(GameLocator locator)
+        public GameModel(GameLocator locator, string scriptPrefix, string battleVoiceFname)
         {
             this.Locator = locator;
+            this.ScriptPrefix = scriptPrefix;
+            this.BattleVoiceFile = battleVoiceFname;
         }
 
         public async Task<Stream> LoadCoverBitmapAsync()
@@ -27,7 +28,7 @@ namespace TrailsHelper.Models
         }
 
         public string Title => this.Locator.Name;
-
-        public string Prefix => this.Locator.Prefix;
+        public string ScriptPrefix { get; }
+        public string BattleVoiceFile { get; }
     }
 }

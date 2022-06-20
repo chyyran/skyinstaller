@@ -8,17 +8,28 @@ using System.Net.Http.Handlers;
 using System.Threading.Tasks;
 using SharpCompress.Archives;
 using SharpCompress.Readers;
-
+using MonoTorrent;
+using MonoTorrent.Client;
+using System.Text.Json;
 
 namespace TrailsHelper.Models
 {
+    static class SoraVoiceModelStringExtensions
+    {
+        public static string FormatTemplateString(this string @this, SoraVoiceInstallModel model)
+            => @this.Replace("$prefix", model.ScriptPrefix)
+            .Replace("$fname", model.BattleVoiceFile);
+    }
+
     internal class SoraVoiceInstallModel : IDisposable
     {
+        private static readonly string ManifestUri = "https://github.com/chyyran/skyinstaller/releases/latest/download/manifest.json";
         private bool disposedValue;
 
-        public SoraVoiceInstallModel(string modPrefix, string gamePath)
+        public SoraVoiceInstallModel(string modPrefix, string gamePath, string battleVoiceFile)
         {
-            this.Prefix = modPrefix;
+            this.ScriptPrefix = modPrefix;
+            this.BattleVoiceFile = battleVoiceFile;
             this.GamePath = gamePath;
             this.GithubClient = new GitHubClient(new ProductHeaderValue("trailshelper"));
             var handler = new HttpClientHandler() { AllowAutoRedirect = true };
@@ -27,19 +38,32 @@ namespace TrailsHelper.Models
             ph.HttpReceiveProgress += (_, args) => this.ProgressChangedEvent?.Invoke(this, ((double)args.BytesTransferred / args.TotalBytes) * 100 ?? 0);
 
             this.HttpClient = new HttpClient(ph);
+            this.TorrentClient = new ClientEngine(new EngineSettingsBuilder()
+            {
+                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache_{this.ScriptPrefix}"),
+            }.ToSettings());
         }
 
-        public string Prefix { get; }
+        public string ScriptPrefix { get; }
+        public string BattleVoiceFile { get; }
         public string GamePath { get; }
         public GitHubClient GithubClient { get; }
         public HttpClient HttpClient { get; }
+        public ClientEngine TorrentClient { get; }
 
         public event EventHandler<double>? ProgressChangedEvent;
-        
-        public async Task<Stream> DownloadLatestMod()
+
+        public async Task<DownloadManifest> DownloadManifest()
         {
-            var releases = await this.GithubClient.Repository.Release.GetLatest("ZhenjianYang", "SoraVoice");
-            var asset = releases.Assets.First(s => s.Name.StartsWith("SoraVoiceLite"));
+            var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri);
+            var manifest = await JsonSerializer.DeserializeAsync<DownloadManifest>(stream);
+            return manifest!;
+        }
+
+        public async Task<Stream> DownloadLatestMod(DownloadManifest manifest)
+        {
+            var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Mod.Owner, manifest.Mod.Repository);
+            var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Mod.Asset.FormatTemplateString(this)));
             var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl);
             var outStream = new MemoryStream();
             await stream.CopyToAsync(outStream);
@@ -47,10 +71,10 @@ namespace TrailsHelper.Models
             return outStream;
         }
 
-        public async Task<Stream> DownloadLatestScripts()
+        public async Task<Stream> DownloadLatestScripts(DownloadManifest manifest)
         {
-            var releases = await this.GithubClient.Repository.Release.GetLatest("ZhenjianYang", "SoraVoiceScripts");
-            var asset = releases.Assets.First(s => s.Name.StartsWith(this.Prefix));
+            var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Scripts.Owner, manifest.Scripts.Repository);
+            var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Scripts.Asset.FormatTemplateString(this)));
             var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl);
             var outStream = new MemoryStream();
             await stream.CopyToAsync(outStream);
@@ -58,20 +82,65 @@ namespace TrailsHelper.Models
             return outStream;
         }
 
-        public async Task<Stream> DownloadDialogueVoiceArchive()
+        public async Task DownloadAndInstallBattleVoice(DownloadManifest manifest, string ext)
         {
-           
-            //var releases = await this.GithubClient.Repository.Release.GetLatest("ZhenjianYang", "SoraVoiceScripts");
-            //var asset = releases.Assets.First(s => s.Name.StartsWith(this.Prefix));
-            //var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl);
-            var outStream = new MemoryStream();
-            //await stream.CopyToAsync(outStream);
-            //await outStream.FlushAsync();
-            return outStream;
+            var stream = await this.HttpClient.GetStreamAsync(manifest.Battle.Uri.FormatTemplateString(this).Replace("$ext", ext));
+            using var outStream = File.Open(Path.Combine(this.GamePath, $"{this.BattleVoiceFile}.{ext}"), System.IO.FileMode.Create);
+            await stream.CopyToAsync(outStream);
+            await outStream.FlushAsync();
+            return;
         }
 
+        public async Task<TorrentManager> StartDownloadTorrent(DownloadManifest manifest)
+        {
+            // http stream can't use random access.
+            var torrentStreamHttp = await this.HttpClient.GetStreamAsync(manifest.Voice.Uri);
+            using var torrentStream = new MemoryStream();
+            await torrentStreamHttp.CopyToAsync(torrentStream);
+            await torrentStream.FlushAsync();
+            torrentStream.Seek(0, SeekOrigin.Begin);
 
-        public void ExtractMod(Stream modStream)
+            var torrent = await this.TorrentClient.AddAsync(
+                await Torrent.LoadAsync(torrentStream), 
+                Path.Combine(Environment.CurrentDirectory, $"skyinst_{this.ScriptPrefix}"),
+                new TorrentSettingsBuilder()
+                {
+                    CreateContainingDirectory = false,
+                }.ToSettings());
+            this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
+
+            var asset = manifest.Voice.Asset.FormatTemplateString(this);
+            foreach (var file in torrent.Files)
+            {
+                if (!file.Path.StartsWith(asset))
+                {
+                    await torrent.SetFilePriorityAsync(file, Priority.DoNotDownload);
+                }
+            }
+            await torrent.StartAsync();
+            await torrent.WaitForMetadataAsync();
+            return torrent;
+        }
+
+        public async Task<Stream> DownloadVoiceTorrent(DownloadManifest manifest, TorrentManager torrent)
+        {
+            var asset = manifest.Voice.Asset.FormatTemplateString(this);
+
+            return await Task.Run(async () =>
+            {
+                while (torrent.State != TorrentState.Stopped && torrent.State != TorrentState.Paused)
+                {
+                    await Task.Delay(1000);
+                    this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
+                }
+
+                await torrent.StopAsync();
+                var voiceFiles = torrent.Files.Single(f => f.Path.StartsWith(asset));
+                return File.OpenRead(voiceFiles.FullPath);
+            });
+        }
+
+        public void ExtractToGameRoot(Stream modStream)
         {
             var archive = ArchiveFactory.Open(modStream);
             using var reader = archive.ExtractAllEntries();
@@ -87,7 +156,7 @@ namespace TrailsHelper.Models
             });
         }
 
-        public void ExtractScript(Stream modStream)
+        public void ExtractToVoiceFolder(Stream modStream)
         {
             var archive = ArchiveFactory.Open(modStream);
             using var reader = archive.ExtractAllEntries();
@@ -110,6 +179,7 @@ namespace TrailsHelper.Models
                 if (disposing)
                 {
                     this.HttpClient.Dispose();
+                    this.TorrentClient.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

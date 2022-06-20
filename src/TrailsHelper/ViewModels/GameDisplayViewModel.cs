@@ -54,7 +54,9 @@ namespace TrailsHelper.ViewModels
 
         public string Title => _game.Title;
 
-        public string Prefix => _game.Prefix;
+        public string Prefix => _game.ScriptPrefix;
+
+        public string BattleVoiceFile => _game.BattleVoiceFile;
 
         private async Task LoadCover()
         {

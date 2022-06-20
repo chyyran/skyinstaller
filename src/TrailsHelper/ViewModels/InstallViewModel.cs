@@ -1,5 +1,7 @@
 ﻿using ReactiveUI;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Text.Json;
 using TrailsHelper.Models;
 namespace TrailsHelper.ViewModels
 {
@@ -14,11 +16,11 @@ namespace TrailsHelper.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _progressValue, value);
         }
 
-        private bool _progressIndeterminate;
-        public bool ProgressIndeterminate
+        private bool _inProgress;
+        public bool IsInProgress
         {
-            get => _progressIndeterminate;
-            private set => this.RaiseAndSetIfChanged(ref _progressIndeterminate, value);
+            get => _inProgress;
+            private set => this.RaiseAndSetIfChanged(ref _inProgress, value);
         }
 
 
@@ -29,26 +31,57 @@ namespace TrailsHelper.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _downloadStatus, value);
         }
 
+
+        readonly ObservableAsPropertyHelper<string> _progressPercentString;
+        public string ProgressPercentString => _progressPercentString.Value;
+
+        public string WindowTitle { get; }
+
         public InstallViewModel(GameDisplayViewModel gameModel)
         {
             this.GameModel = gameModel;
-          
+
+            this.WindowTitle = $"SkyInstaller — {this.GameModel.Title}";
+
+            _progressPercentString = this.WhenAnyValue(x => x.ProgressValue)
+               .Select(x => $"{x:F1}%")
+               .ToProperty(this, x => x.ProgressPercentString);
+
             this.InstallCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                using var client = new SoraVoiceInstallModel(gameModel.Prefix, gameModel.Path);
+                this.IsInProgress = true;
+                using var client = new SoraVoiceInstallModel(gameModel.Prefix, gameModel.Path, gameModel.BattleVoiceFile);
                 client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
 
+                this.Status = "Downloading manifest...";
+                var manifest = await client.DownloadManifest();
+
                 this.Status = "Downloading SoraVoiceLite...";
-                var modArchive = await client.DownloadLatestMod();
+                var modArchive = await client.DownloadLatestMod(manifest);
                 this.Status = "Extracting SoraVoiceLite...";
-                client.ExtractMod(modArchive);
+                client.ExtractToGameRoot(modArchive);
 
                 this.Status = "Downloading script files...";
-                var scriptArchive = await client.DownloadLatestScripts();
+                var scriptArchive = await client.DownloadLatestScripts(manifest);
                 this.Status = "Extracting scripts...";
-                client.ExtractScript(scriptArchive);
+                client.ExtractToVoiceFolder(scriptArchive);
+
+
+                this.Status = "Downloading battle voices...";
+                await client.DownloadAndInstallBattleVoice(manifest, "dir");
+                await client.DownloadAndInstallBattleVoice(manifest, "dat");
+
+                this.Status = "Downloading metadata...";
+                var torrent = await client.StartDownloadTorrent(manifest);
+
+                this.Status = "Downloading voice data...";
+                var voiceArchive = await client.DownloadVoiceTorrent(manifest, torrent);
+
+                this.Status = "Extracting voice data...";
+                client.ExtractToVoiceFolder(voiceArchive);
 
                 this.Status = "Done";
+                this.IsInProgress = false;
                 return Unit.Default;
             });
         }

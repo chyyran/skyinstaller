@@ -5,18 +5,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
          x:Class="TrailsHelper.Views.InstallWindow"
+        WindowStartupLocation="CenterOwner"
 
-        Height="450" Width="800"
+        Height="450" Width="900"
         MinHeight="450"
         MinWidth="750"
         MaxHeight="450"
+        MaxWidth="900"
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         Icon="/Assets/avalonia-logo.ico"
         ExtendClientAreaToDecorationsHint="True"
-        Title="Skyinstaller">
+        Title="{Binding WindowTitle}">
   
   <Grid ShowGridLines="True">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
@@ -53,7 +55,9 @@
         </Panel>
         <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center"/>
         <Button HorizontalAlignment="Center" 
-                Background="Black" Command="{Binding InstallCommand}">Install</Button>
+                Background="Black" Command="{Binding InstallCommand}"
+                IsEnabled="{Binding !IsInProgress}"
+                >Install</Button>
       </StackPanel>
       
       <Grid Margin="20 30 0 10" Grid.Column="1" HorizontalAlignment="Stretch" Grid.ColumnSpan="2">
@@ -65,18 +69,22 @@
           <Label>Installing to</Label>
           <Label Margin="0 0 0 20" Content="{Binding GameModel.Path}"/>
           <Label>Installation will depend on your internet speed.</Label>
-          <Label>Please do not close this window while installing.</Label>
+          <Label>Once installation begins, it can not be paused.</Label>
+          <Label>Please do not close this window during installation.</Label>
+          <Label>Note that downloading voice data will take a while.</Label>
         </StackPanel>
       
         <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
           <Label Grid.Column="0" Content="{Binding Status}"/>
-          <ProgressBar Margin="10 0 20 0" Grid.Column="1" HorizontalAlignment="Stretch" 
+          <ProgressBar Grid.Column="1" Margin="10 0 10 0" HorizontalAlignment="Stretch" 
                        Value="{Binding ProgressValue}"
-                       IsIndeterminate="{Binding ProgressIndeterminate}"></ProgressBar>
+                      ></ProgressBar>
+          <Label Grid.Column="2" Margin="0 0 20 0" Content="{Binding ProgressPercentString}"/>
 
         </Grid>
       </Grid>

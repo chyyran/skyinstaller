@@ -10,9 +10,15 @@ namespace TrailsHelper.Views
         public InstallWindow()
         {
             InitializeComponent();
+            this.Closing += InstallWindow_Closing;
 #if DEBUG
             this.AttachDevTools();
 #endif
+        }
+
+        private void InstallWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = this.ViewModel!.IsInProgress;
         }
 
         private void InitializeComponent()
