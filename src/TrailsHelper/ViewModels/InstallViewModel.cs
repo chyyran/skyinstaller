@@ -59,13 +59,12 @@ namespace TrailsHelper.ViewModels
                 this.Status = "Downloading SoraVoiceLite...";
                 var modArchive = await client.DownloadLatestMod(manifest);
                 this.Status = "Extracting SoraVoiceLite...";
-                client.ExtractToGameRoot(modArchive);
+                await client.ExtractToGameRoot(modArchive);
 
                 this.Status = "Downloading script files...";
                 var scriptArchive = await client.DownloadLatestScripts(manifest);
                 this.Status = "Extracting scripts...";
-                client.ExtractToVoiceFolder(scriptArchive);
-
+                await client.ExtractToVoiceFolder(scriptArchive);
 
                 this.Status = "Downloading battle voices...";
                 await client.DownloadAndInstallBattleVoice(manifest, "dir");
@@ -78,7 +77,7 @@ namespace TrailsHelper.ViewModels
                 var voiceArchive = await client.DownloadVoiceTorrent(manifest, torrent);
 
                 this.Status = "Extracting voice data...";
-                client.ExtractToVoiceFolder(voiceArchive);
+                await client.ExtractToVoiceFolder(voiceArchive);
 
                 this.Status = "Done";
                 this.IsInProgress = false;

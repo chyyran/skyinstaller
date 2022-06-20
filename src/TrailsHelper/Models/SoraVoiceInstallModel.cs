@@ -128,47 +128,59 @@ namespace TrailsHelper.Models
 
             return await Task.Run(async () =>
             {
-                while (torrent.State != TorrentState.Stopped && torrent.State != TorrentState.Paused)
+                while (torrent.State != TorrentState.Stopped && torrent.State != TorrentState.Paused && torrent.State != TorrentState.Seeding)
                 {
                     await Task.Delay(1000);
-                    this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
+                    this.ProgressChangedEvent?.Invoke(this, torrent.PartialProgress);
                 }
 
-                await torrent.StopAsync();
                 var voiceFiles = torrent.Files.Single(f => f.Path.StartsWith(asset));
                 return File.OpenRead(voiceFiles.FullPath);
             });
         }
 
-        public void ExtractToGameRoot(Stream modStream)
+        public async Task ExtractToGameRoot(Stream modStream)
         {
             var archive = ArchiveFactory.Open(modStream);
             using var reader = archive.ExtractAllEntries();
+            long totalSize = archive.TotalUncompressSize;
+            long bytesUncompressed = 0;
             reader.EntryExtractionProgress += (_, args) =>
             {
-                this.ProgressChangedEvent?.Invoke(this, args.ReaderProgress?.PercentageReadExact ?? 0);
+                bytesUncompressed += args.ReaderProgress?.BytesTransferred ?? 0;
+                this.ProgressChangedEvent?.Invoke(this, bytesUncompressed / (double)totalSize);
             };
 
-            reader.WriteAllToDirectory(this.GamePath, new()
+            await Task.Run(() =>
             {
-                ExtractFullPath = true,
-                Overwrite = true,
+                reader.WriteAllToDirectory(this.GamePath, new()
+                {
+                    ExtractFullPath = true,
+                    Overwrite = true,
+                });
             });
         }
 
-        public void ExtractToVoiceFolder(Stream modStream)
+        public async Task ExtractToVoiceFolder(Stream modStream)
         {
+    
             var archive = ArchiveFactory.Open(modStream);
             using var reader = archive.ExtractAllEntries();
+            long totalSize = archive.TotalUncompressSize;
+            long bytesUncompressed = 0;
             reader.EntryExtractionProgress += (_, args) =>
             {
-                this.ProgressChangedEvent?.Invoke(this, args.ReaderProgress?.PercentageReadExact ?? 0);
+                bytesUncompressed += args.ReaderProgress?.BytesTransferred ?? 0;
+                this.ProgressChangedEvent?.Invoke(this, bytesUncompressed / (double)totalSize);
             };
-            
-            reader.WriteAllToDirectory(Path.Combine(this.GamePath, "voice"), new()
+
+            await Task.Run(() =>
             {
-                ExtractFullPath = true,
-                Overwrite = true,
+                reader.WriteAllToDirectory(Path.Combine(this.GamePath, "voice"), new()
+                {
+                    ExtractFullPath = true,
+                    Overwrite = true,
+                });
             });
         }
 
