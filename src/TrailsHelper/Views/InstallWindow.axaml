@@ -47,11 +47,13 @@
    
       <StackPanel Grid.Column="0" Spacing="5" VerticalAlignment="Center">
         <Panel IsVisible="{Binding GameModel.IsLoaded}" Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
-          <Border CornerRadius="3" ClipToBounds="True" BoxShadow="inset -1 0 1 -1 #10000000, inset -2 0 2 -2 #20000000, inset -6 0 6 -6 #16000000, inset -16 0 16 -16 #16000000">
-            <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding GameModel.CoverArt}"/>
+          <Border CornerRadius="3" BoxShadow="0 3 6 #10000000, 0 3 6 #20000000">
+            <Border ClipToBounds="True" CornerRadius="3">
+              <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding GameModel.CoverArt}"/>
+            </Border>
           </Border>
         </Panel>
-        <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center"/>
+        <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center" />
         <Button HorizontalAlignment="Center" 
                 Background="Black" Command="{Binding InstallCommand}"
                 IsEnabled="{Binding !IsInProgress}"

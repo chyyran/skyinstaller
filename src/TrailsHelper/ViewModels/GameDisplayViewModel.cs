@@ -28,7 +28,7 @@ namespace TrailsHelper.ViewModels
             _installWindowIcon = installIcon;
             var ico = new WindowIcon(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
             _installButtonText = this.WhenAnyValue(x => x.IsInstalled)
-                .Select(x => x ? "Install Voice Patches" : "Game not installed")
+                .Select(x => x ? "Install Evolution Voices" : "Game not installed")
                 .ToProperty(this, x => x.InstallButtonText);
             this.ShowInstallDialog = new();
             this.InstallForGameCommand = ReactiveCommand.CreateFromTask(async () =>
