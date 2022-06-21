@@ -5,6 +5,8 @@ One-click installer for the Evolution voice mod for the *Trails in the Sky* seri
 
 ![image](https://user-images.githubusercontent.com/1000503/174701235-4ff814fc-bef6-4391-9242-97ab0786206c.png)
 
+SkyInstaller automatically downloads and installs [SoraVoice Lite](https://github.com/ZhenjianYang/SoraVoice) and the necessary voice data to an installed Steam version of the *Sky* trilogy.
+
 Usage
 -----
 
