@@ -20,12 +20,12 @@ namespace TrailsHelper.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private bool _isSteamRunning = false;
-        public bool SteamApiReady { get => _isSteamRunning; set => this.RaiseAndSetIfChanged(ref _isSteamRunning, value); }
+        public bool SteamInitComplete { get => _isSteamRunning; set => this.RaiseAndSetIfChanged(ref _isSteamRunning, value); }
         
         public MainWindowViewModel()
         {
             RxApp.MainThreadScheduler.Schedule(this.ActivateSteam);
-            this.WhenAnyValue(x => x.SteamApiReady)
+            this.WhenAnyValue(x => x.SteamInitComplete)
                 .Where(x => x)
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Subscribe(this.LoadAll!);
@@ -40,8 +40,9 @@ namespace TrailsHelper.ViewModels
             if (await Steam.StartSteam())
             {
                 await Steam.LoopInit();
-                this.SteamApiReady = true;
             };
+            // even if steam init fails, we need to show the main menu.
+            this.SteamInitComplete = true;
         }
 
         private async void LoadAll(bool s)

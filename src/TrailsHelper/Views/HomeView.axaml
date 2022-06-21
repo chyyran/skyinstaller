@@ -12,7 +12,7 @@
   </Design.DataContext>
   
   <StackPanel VerticalAlignment="Center">
-    <StackPanel IsVisible="{Binding !SteamApiReady}"  HorizontalAlignment="Center" VerticalAlignment="Center">
+    <StackPanel IsVisible="{Binding !SteamInitComplete}"  HorizontalAlignment="Center" VerticalAlignment="Center">
       <ProgressBar Classes="Circle" IsIndeterminate="True">
         <ProgressBar.Styles>
           <StyleInclude Source="avares://Material.Styles/ProgressBar.xaml"></StyleInclude>
@@ -20,7 +20,7 @@
       </ProgressBar>
       <Label>Waiting for Steam...</Label>
     </StackPanel>
-    <StackPanel IsVisible="{Binding SteamApiReady}"  VerticalAlignment="Center" HorizontalAlignment="Center">
+    <StackPanel IsVisible="{Binding SteamInitComplete}"  VerticalAlignment="Center" HorizontalAlignment="Center">
       <WrapPanel HorizontalAlignment="Center">
         <local:GameDisplay DataContext="{Binding ContextFC}"></local:GameDisplay>
         <local:GameDisplay DataContext="{Binding ContextSC}"></local:GameDisplay>

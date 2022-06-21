@@ -39,8 +39,8 @@ namespace TrailsHelper
                 var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Valve\\Steam");
                 return key?.GetValue("SteamExe") as string;
             }
-            // todo: linux?
-            throw new PlatformNotSupportedException();
+            // if we're on a different platform, just force manual browsing.
+            return null;
         }
 
         public static bool IsSteamInstalled()
