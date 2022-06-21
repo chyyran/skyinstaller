@@ -15,6 +15,8 @@ using System.Text.Json.Serialization.Metadata;
 using TrailsHelper.Support;
 using System.Threading;
 using CG.Web.MegaApiClient;
+using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TrailsHelper.Models
 {
@@ -58,6 +60,23 @@ namespace TrailsHelper.Models
         public event EventHandler<double>? ProgressChangedEvent;
         public event EventHandler<long>? SpeedChangedEvent;
 
+        private async Task<Stream> TryBestDownloadHttp(IEnumerable<string> uris, CancellationToken cancel = default)
+        {
+            foreach (var uri in uris)
+            {
+                try
+                {
+                    var stream = await this.HttpClient.GetStreamAsync(uri, cancel);
+                    return stream;
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+            throw new HttpRequestException("None of the provided URIs were avaialble.");
+        }
+
         public async Task<DownloadManifest> DownloadManifest(CancellationToken cancel = default)
         {
             var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri, cancel);
@@ -77,6 +96,7 @@ namespace TrailsHelper.Models
             var outStream = new MemoryStream();
             await stream.CopyToAsync(outStream, cancel);
             await outStream.FlushAsync(cancel);
+            outStream.Seek(0, SeekOrigin.Begin);
             return outStream;
         }
 
@@ -90,18 +110,41 @@ namespace TrailsHelper.Models
             var outStream = new MemoryStream();
             await stream.CopyToAsync(outStream, cancel);
             await outStream.FlushAsync(cancel);
+            outStream.Seek(0, SeekOrigin.Begin);
             return outStream;
         }
 
         public async Task DownloadAndInstallBattleVoice(DownloadManifest manifest, string ext, CancellationToken cancel = default)
         {
-            var stream = await this.HttpClient.GetStreamAsync(manifest.Battle.Uri.FormatTemplateString(this).Replace("$ext", ext), cancel);
+            var stream = await this.TryBestDownloadHttp(manifest.Battle.DirectUris ?? new[] { manifest.Battle.Uri }
+                .Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)), cancel);
             cancel.ThrowIfCancellationRequested();
 
             using var outStream = File.Open(Path.Combine(this.GamePath, $"{this.BattleVoiceFile}.{ext}"), System.IO.FileMode.Create);
             await stream.CopyToAsync(outStream, cancel);
             await outStream.FlushAsync(cancel);
+            outStream.Seek(0, SeekOrigin.Begin);
             return;
+        }
+
+        public async Task<Stream> DownloadVoiceFromDirect(DownloadManifest manifest, CancellationToken cancel = default)
+        {
+            if (manifest.Voice.DirectUris == null || !manifest.Voice.DirectUris.Any())
+            {
+                throw new ArgumentException("Direct download URIs were not found.");
+            }
+
+            var stream = await this.TryBestDownloadHttp(manifest.Voice.DirectUris
+               .Select(uri => uri.FormatTemplateString(this)), cancel);
+                    cancel.ThrowIfCancellationRequested();
+            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{this.ScriptPrefix}.7z");
+
+            using var outStream = File.Open(filename, System.IO.FileMode.Create);
+            await stream.CopyToAsync(outStream, cancel);
+            await outStream.FlushAsync(cancel);
+            outStream.Seek(0, SeekOrigin.Begin);
+            return outStream;
+
         }
 
         public async Task<Stream> DownloadVoiceFromMega(DownloadManifest manifest, CancellationToken cancel = default)

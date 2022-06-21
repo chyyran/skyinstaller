@@ -76,38 +76,49 @@ namespace TrailsHelper.ViewModels
             await client.ExtractToVoiceFolder(scriptArchive, cancel);
             cancel.ThrowIfCancellationRequested();
 
-
             Stream voiceArchive;
             try
             {
+                // try download from direct links first
                 this.Status = "Downloading voice data...";
-                voiceArchive = await client.DownloadVoiceFromMega(manifest, cancel);
+                voiceArchive = await client.DownloadVoiceFromDirect(manifest, cancel);
                 cancel.ThrowIfCancellationRequested();
-            }
-            catch (Exception e) when (e is NotSupportedException || e is ApiException 
-                || e is HttpRequestException
-                || (e is AggregateException a && a.InnerException is HttpRequestException))
+            } 
+            catch (Exception e) when (e is ArgumentException || e is HttpRequestException)
             {
-                this.Status = "Downloading metadata...";
-                var torrent = await client.DownloadVoiceTorrentInfo(manifest, cancel);
-                cancel.ThrowIfCancellationRequested();
-
-                this.Status = "Downloading voice data...";
-
-                void voiceDataStatusHandler(object? _, long speed)
+                // Direct failed, try mega...
+                try
                 {
-                    if (!cancel.IsCancellationRequested)
-                    {
-                        this.Status = $"Downloading voice data ({speed / 1024} KB/s)...";
-                    }
+                    this.Status = "Downloading voice data...";
+                    voiceArchive = await client.DownloadVoiceFromMega(manifest, cancel);
+                    cancel.ThrowIfCancellationRequested();
                 }
+                catch (Exception megaException) when (megaException is NotSupportedException || megaException is ApiException
+                    || megaException is HttpRequestException
+                    || (megaException is AggregateException a && a.InnerException is HttpRequestException))
+                {
+                    // Fallback finally to torrent
+                    this.Status = "Downloading metadata...";
+                    var torrent = await client.DownloadVoiceTorrentInfo(manifest, cancel);
+                    cancel.ThrowIfCancellationRequested();
 
-                client.SpeedChangedEvent += voiceDataStatusHandler;
-                voiceArchive = await client.DownloadTorrent(manifest, torrent!, cancel);
-                client.SpeedChangedEvent -= voiceDataStatusHandler;
-                cancel.ThrowIfCancellationRequested();
+                    this.Status = "Downloading voice data...";
+
+                    void voiceDataStatusHandler(object? _, long speed)
+                    {
+                        if (!cancel.IsCancellationRequested)
+                        {
+                            this.Status = $"Downloading voice data ({speed / 1024} KB/s)...";
+                        }
+                    }
+
+                    client.SpeedChangedEvent += voiceDataStatusHandler;
+                    voiceArchive = await client.DownloadTorrent(manifest, torrent!, cancel);
+                    client.SpeedChangedEvent -= voiceDataStatusHandler;
+                    cancel.ThrowIfCancellationRequested();
+                }
             }
-
+            
             this.Status = "Extracting voice data...";
             await client.ExtractToVoiceFolder(voiceArchive, cancel);
             cancel.ThrowIfCancellationRequested();

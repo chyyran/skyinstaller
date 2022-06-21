@@ -12,6 +12,9 @@ namespace TrailsHelper.Support
     {
         [JsonPropertyName("uri")]
         public string Uri { get; set; }
+
+        [JsonPropertyName("directs")]
+        public List<string> DirectUris { get; set; }
     }
 
     public class Mod
@@ -57,6 +60,9 @@ namespace TrailsHelper.Support
     {
         [JsonPropertyName("uri")]
         public string Uri { get; set; }
+
+        [JsonPropertyName("directs")]
+        public List<string> DirectUris { get; set; }
 
         [JsonPropertyName("asset")]
         public string Asset { get; set; }

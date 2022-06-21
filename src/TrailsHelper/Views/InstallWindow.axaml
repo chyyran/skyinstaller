@@ -81,7 +81,6 @@
           <Label>Installation time will depend on your internet speed.</Label>
           <Label>Closing this window will cancel the installation and revert any changes.</Label>
           <Label Margin="0 20 0 0">Downloading and extracting voice data may take a while.</Label>
-          <Label>If the voice data download freezes, cancel installation and try again.</Label>
         </StackPanel>
       
         <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
