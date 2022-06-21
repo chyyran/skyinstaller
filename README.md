@@ -43,9 +43,9 @@ You can cancel midway through installing the mod. This will delete `dinput8.dll`
 SkyInstaller assumes a fresh installation from Steam, which may conflict with other mods. It is suggested that the Evolution voice mods are installed via SkyInstaller *first*, before
 installing other mods manually.
 
-### What is 'Spacewar'?
-SkyInstaller uses the Steam API to locate the installation path of the game and verify ownership. The Steam API needs an [AppID](https://developer.valvesoftware.com/wiki/Steam_Application_IDs) to
-initialize, and [Spacewar](https://steamdb.info/app/480/) is a commonly used testing AppID that SkyInstaller also uses. Spacewar will disappear from your library after restarting Steam.
+### What is 'Steamworks Common Redistributables'?
+SkyInstaller uses the Steam API to locate the installation path and verify ownership of the game . The Steam API needs an [AppID](https://developer.valvesoftware.com/wiki/Steam_Application_IDs) to
+initialize, and SkyInstaller borrows the AppID of the [Steamworks Common Redistributables](https://steamdb.info/app/228980/) for this purpose.
 
 ### How do I uninstall the mod?
 SkyInstaller does not have a dedicated uninstaller for the Evolution voice mod. Manually delete `dinput8.dll` from the install folder to uninstall the mod.
