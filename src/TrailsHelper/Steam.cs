@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -52,7 +53,7 @@ namespace TrailsHelper
         {
             var steamPath = GetSteamPath();
   
-            if (steamPath == null) {
+            if (steamPath == null || !File.Exists(steamPath)) {
                 return false;
             }
 
