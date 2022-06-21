@@ -37,10 +37,11 @@ namespace TrailsHelper.ViewModels
 
         public async void ActivateSteam()
         {
-            await Steam.StartSteam();
-            await Steam.LoopInit();
-
-            this.SteamApiReady = true;
+            if (await Steam.StartSteam())
+            {
+                await Steam.LoopInit();
+                this.SteamApiReady = true;
+            };
         }
 
         private async void LoadAll(bool s)

@@ -25,11 +25,16 @@ namespace TrailsHelper.Support
 
         public bool IsInstalled()
         {
+            if (!SteamClient.IsValid)
+                return false;
+
             return SteamApps.IsAppInstalled(this.AppId);
         }
 
-        public DirectoryInfo GetInstallDirectory()
+        public DirectoryInfo? GetInstallDirectory()
         {
+            if (!SteamClient.IsValid)
+                return null;
             return new DirectoryInfo(SteamApps.AppInstallDir(this.AppId));
         }
 

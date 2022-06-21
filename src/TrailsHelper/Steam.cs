@@ -43,15 +43,20 @@ namespace TrailsHelper
             throw new PlatformNotSupportedException();
         }
 
-        public static async Task StartSteam()
+        public static bool IsSteamInstalled()
+        {
+            return GetSteamPath() != null;
+        }
+
+        public static async Task<bool> StartSteam()
         {
             var steamPath = GetSteamPath();
   
             if (steamPath == null) {
-                return;
+                return false;
             }
 
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 while (!Process.GetProcessesByName("steam").Any())
                 {
@@ -61,6 +66,7 @@ namespace TrailsHelper
                     });
                     Thread.Sleep(100);
                 }
+                return true;
             });
         }
     }

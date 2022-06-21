@@ -27,13 +27,13 @@ namespace TrailsHelper.ViewModels
             _game = model;
             _installWindowIcon = installIcon;
             var ico = new WindowIcon(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
-            _installButtonText = this.WhenAnyValue(x => x.IsInstalled)
-                .Select(x => x ? "Install Evolution Voices" : "Game not installed")
+            _steamInstallButtonText = this.WhenAnyValue(x => x.IsInstalled)
+                .Select(x => x ? "Install to Steam version" : "Game not installed")
                 .ToProperty(this, x => x.InstallButtonText);
             this.ShowInstallDialog = new();
             this.InstallForGameCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                var install = new InstallViewModel(this);
+                var install = new InstallViewModel(this, this.SteamPath);
                 var result = await ShowInstallDialog.Handle(install);
                 return this;
             });
@@ -53,10 +53,10 @@ namespace TrailsHelper.ViewModels
         public bool IsLoaded { get => _isLoaded; set => this.RaiseAndSetIfChanged(ref _isLoaded, value); }
 
         private string _path = "Game not found.";
-        public string Path { get => _path; set => this.RaiseAndSetIfChanged(ref _path, value); }
+        public string SteamPath { get => _path; set => this.RaiseAndSetIfChanged(ref _path, value); }
 
-        readonly ObservableAsPropertyHelper<string> _installButtonText;
-        public string InstallButtonText => _installButtonText.Value;
+        readonly ObservableAsPropertyHelper<string> _steamInstallButtonText;
+        public string InstallButtonText => _steamInstallButtonText.Value;
 
         public string Title => _game.Title;
 
@@ -75,7 +75,7 @@ namespace TrailsHelper.ViewModels
             await this.LoadCover();
             this.IsInstalled = _game.Locator.IsInstalled();
             if (this.IsInstalled) 
-                this.Path = _game.Locator.GetInstallDirectory().FullName;
+                this.SteamPath = _game.Locator.GetInstallDirectory()!.FullName;
             this.IsLoaded = true;
         }
     }

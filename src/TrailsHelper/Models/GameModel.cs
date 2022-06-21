@@ -32,9 +32,8 @@ namespace TrailsHelper.Models
         public string ScriptPrefix { get; }
         public string BattleVoiceFile { get; }
 
-        public void Clean()
+        public void Clean(DirectoryInfo startPath)
         {
-            var startPath = this.Locator.GetInstallDirectory();
             if (File.Exists(Path.Combine(startPath.FullName, "dinput8.dll")))
             {
                 try

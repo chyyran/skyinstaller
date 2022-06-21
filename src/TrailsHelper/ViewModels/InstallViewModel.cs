@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using System;
+using System.IO;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
@@ -34,7 +35,6 @@ namespace TrailsHelper.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _downloadStatus, value);
         }
 
-
         readonly ObservableAsPropertyHelper<string> _progressPercentString;
         public string ProgressPercentString => _progressPercentString.Value;
 
@@ -42,9 +42,11 @@ namespace TrailsHelper.ViewModels
 
         public CancellationTokenSource InstallCancel { get; private set; } = new();
 
+        public string GamePath { get; }
+
         private bool CancelInstall()
         {
-            this.GameModel.Game.Clean();
+            this.GameModel.Game.Clean(new DirectoryInfo(this.GamePath));
             return false;
         }
 
@@ -95,9 +97,10 @@ namespace TrailsHelper.ViewModels
             return true;
         }
 
-        public InstallViewModel(GameDisplayViewModel gameModel)
+        public InstallViewModel(GameDisplayViewModel gameModel, string gamePath)
         {
             this.GameModel = gameModel;
+            this.GamePath = gamePath;
 
             this.WindowTitle = $"SkyInstaller — {this.GameModel.Title}";
 
@@ -107,8 +110,14 @@ namespace TrailsHelper.ViewModels
 
             this.InstallCommand = ReactiveCommand.CreateFromTask(async () =>
             {
+                if (!Directory.Exists(this.GamePath))
+                {
+                    this.Status = "Game directory not found";
+                    return false;
+                }
+
                 this.IsInProgress = true;
-                using var client = new SoraVoiceInstallModel(gameModel.Prefix, gameModel.Path, gameModel.BattleVoiceFile);
+                using var client = new SoraVoiceInstallModel(gameModel.Prefix, this.GamePath, gameModel.BattleVoiceFile);
                 client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
 
                 var cancel = this.InstallCancel.Token;
