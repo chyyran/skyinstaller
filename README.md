@@ -1,9 +1,9 @@
 SkyInstaller
 ============
 
-1-click installer for the Evolution voice mod for the *Trails in the Sky* series.
+One-click installer for the Evolution voice mod for the *Trails in the Sky* series.
 
-![Screenshot 2022-06-20 203816](https://user-images.githubusercontent.com/1000503/174693237-d75e3335-753a-40fc-ab5f-6bdcc5e781a4.png)
+![image](https://user-images.githubusercontent.com/1000503/174701235-4ff814fc-bef6-4391-9242-97ab0786206c.png)
 
 Usage
 -----
