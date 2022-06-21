@@ -116,15 +116,19 @@ namespace TrailsHelper.Models
 
         public async Task DownloadAndInstallBattleVoice(DownloadManifest manifest, string ext, CancellationToken cancel = default)
         {
-            var stream = await this.TryBestDownloadHttp((manifest.Battle.DirectUris ?? new() { manifest.Battle.Uri })
-                .Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)
+            var directUris = manifest.Battle.DirectUris;
+            if (directUris == null || !directUris.Any())
+            {
+                directUris = new() { manifest.Battle.Uri };
+            }
+
+            var stream = await this.TryBestDownloadHttp(directUris.Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)
                 ), cancel);
             cancel.ThrowIfCancellationRequested();
 
             using var outStream = File.Open(Path.Combine(this.GamePath, $"{this.BattleVoiceFile}.{ext}"), System.IO.FileMode.Create);
             await stream.CopyToAsync(outStream, cancel);
             await outStream.FlushAsync(cancel);
-            outStream.Seek(0, SeekOrigin.Begin);
             return;
         }
 
@@ -140,7 +144,7 @@ namespace TrailsHelper.Models
                     cancel.ThrowIfCancellationRequested();
             string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{this.ScriptPrefix}.7z");
 
-            using var outStream = File.Open(filename, System.IO.FileMode.Create);
+            var outStream = File.Open(filename, System.IO.FileMode.Create, FileAccess.ReadWrite);
             await stream.CopyToAsync(outStream, cancel);
             await outStream.FlushAsync(cancel);
             outStream.Seek(0, SeekOrigin.Begin);
@@ -268,7 +272,6 @@ namespace TrailsHelper.Models
 
         public async Task ExtractToVoiceFolder(Stream modStream, CancellationToken cancel = default)
         {
-    
             var archive = ArchiveFactory.Open(modStream);
             using var reader = archive.ExtractAllEntries();
             long totalSize = archive.TotalUncompressSize;

@@ -76,14 +76,6 @@ namespace TrailsHelper.ViewModels
             await client.ExtractToVoiceFolder(scriptArchive, cancel);
             cancel.ThrowIfCancellationRequested();
 
-            this.Status = "Downloading battle voices...";
-            await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
-            cancel.ThrowIfCancellationRequested();
-
-            await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
-            cancel.ThrowIfCancellationRequested();
-
-
             Stream voiceArchive;
             try
             {
@@ -126,11 +118,17 @@ namespace TrailsHelper.ViewModels
                     cancel.ThrowIfCancellationRequested();
                 }
             }
-            
+
             this.Status = "Extracting voice data...";
             await client.ExtractToVoiceFolder(voiceArchive, cancel);
             cancel.ThrowIfCancellationRequested();
 
+            this.Status = "Downloading battle voices...";
+            await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
+            cancel.ThrowIfCancellationRequested();
+
+            await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
+            cancel.ThrowIfCancellationRequested();
 
             return true;
         }
