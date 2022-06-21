@@ -16,7 +16,7 @@ the Chinese release, and the GOG or Humble Bundle releases.
 For non-Steam releases of the game, follow the instructions on the [PC Gaming Wiki](https://www.pcgamingwiki.com/wiki/The_Legend_of_Heroes:_Trails_in_the_Sky)
 to manually install the voice patches.
 
-SkyInstaller will automatically detect the game when it is installed. Simply press the 'Install Voice Patches' button for the corresponding game,
+SkyInstaller will automatically detect the game when it is installed. Simply press the 'Install Evolution Voices' button for the corresponding game,
 confirm the path is correct, and press install. All necessary files will be automatically downloaded and installed to the game installation.
 
 Troubleshooting
