@@ -15,7 +15,6 @@ namespace TrailsHelper.Models
         public GameLocator Locator { get; }
 
         private static readonly HttpClient httpClient = new();
-
         public GameModel(GameLocator locator, string scriptPrefix, string battleVoiceFname)
         {
             this.Locator = locator;

@@ -1,3 +1,6 @@
+using Avalonia;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using ReactiveUI;
 using System;
@@ -28,9 +31,9 @@ namespace TrailsHelper.ViewModels
                 .Subscribe(this.LoadAll!);
         }
 
-        public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A"));
-        public GameDisplayViewModel ContextSC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_SC, "sc", "ED6_DT37"));
-        public GameDisplayViewModel Context3rd { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_3RD, "3rd", "ED6_DT37"));
+        public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A"), "avares://SkyInstaller/Assets/fc.ico");
+        public GameDisplayViewModel ContextSC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_SC, "sc", "ED6_DT37"), "avares://SkyInstaller/Assets/sc.ico");
+        public GameDisplayViewModel Context3rd { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_3RD, "3rd", "ED6_DT37"), "avares://SkyInstaller/Assets/3rd_config.ico");
 
         public async void ActivateSteam()
         {

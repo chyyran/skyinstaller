@@ -27,8 +27,15 @@ namespace TrailsHelper.Views
 
             if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                var mainIcon = desktop.MainWindow.Icon;
+                desktop.MainWindow.WindowState = WindowState.Minimized;
+                desktop.MainWindow.Icon = dialog.Icon;
+
                 var result = await dialog.ShowDialog<bool>(desktop.MainWindow);
                 interaction.SetOutput(result);
+                
+                desktop.MainWindow.WindowState = WindowState.Normal;
+                desktop.MainWindow.Icon = mainIcon;
             }
         }
         private void InitializeComponent()

@@ -1,4 +1,7 @@
-﻿using Avalonia.Media.Imaging;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -17,10 +20,13 @@ namespace TrailsHelper.ViewModels
         public GameModel Game => _game;
         public ReactiveCommand<Unit, GameDisplayViewModel> InstallForGameCommand { get; }
         public Interaction<InstallViewModel, bool> ShowInstallDialog { get; }
-
-        public GameDisplayViewModel(Models.GameModel model)
+        private string _installWindowIcon { get; }
+        public WindowIcon InstallWindowIcon => new(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
+        public GameDisplayViewModel(Models.GameModel model, string installIcon)
         {
             _game = model;
+            _installWindowIcon = installIcon;
+            var ico = new WindowIcon(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
             _installButtonText = this.WhenAnyValue(x => x.IsInstalled)
                 .Select(x => x ? "Install Voice Patches" : "Game not installed")
                 .ToProperty(this, x => x.InstallButtonText);

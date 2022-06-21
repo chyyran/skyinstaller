@@ -15,10 +15,9 @@
         MaxWidth="900"
         TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
-        Icon="/Assets/fc_config.ico"
+        Icon="{Binding GameModel.InstallWindowIcon}"
         ExtendClientAreaToDecorationsHint="True"
         Title="{Binding WindowTitle}">
-  
   <Grid ShowGridLines="True">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
