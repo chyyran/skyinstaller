@@ -1,5 +1,8 @@
 SkyInstaller
 ============
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/chyyran/skyinstaller)
+![license](https://img.shields.io/github/license/chyyran/skyinstaller)
+
 
 One-click installer for the Evolution voice mod for the *Trails in the Sky* series.
 
