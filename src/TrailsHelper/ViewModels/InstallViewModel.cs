@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using CG.Web.MegaApiClient;
+using ReactiveUI;
 using System;
 using System.IO;
 using System.Reactive;
@@ -32,7 +33,7 @@ namespace TrailsHelper.ViewModels
         public string? Status
         {
             get => _downloadStatus;
-            private set => this.RaiseAndSetIfChanged(ref _downloadStatus, value);
+            set => this.RaiseAndSetIfChanged(ref _downloadStatus, value);
         }
 
         readonly ObservableAsPropertyHelper<string> _progressPercentString;
@@ -74,13 +75,35 @@ namespace TrailsHelper.ViewModels
             await client.ExtractToVoiceFolder(scriptArchive, cancel);
             cancel.ThrowIfCancellationRequested();
 
-            this.Status = "Downloading metadata...";
-            var torrent = await client.DownloadTorrentInfo(manifest, cancel);
-            cancel.ThrowIfCancellationRequested();
 
-            this.Status = "Downloading voice data...";
-            var voiceArchive = await client.DownloadVoiceTorrent(manifest, torrent!, cancel);
-            cancel.ThrowIfCancellationRequested();
+            Stream voiceArchive;
+            try
+            {
+                this.Status = "Downloading voice data...";
+                voiceArchive = await client.DownloadVoiceFromMega(manifest, cancel);
+                cancel.ThrowIfCancellationRequested();
+            }
+            catch (Exception e) when (e is NotSupportedException || e is ApiException)
+            {
+                this.Status = "Downloading metadata...";
+                var torrent = await client.DownloadVoiceTorrentInfo(manifest, cancel);
+                cancel.ThrowIfCancellationRequested();
+
+                this.Status = "Downloading voice data...";
+
+                void voiceDataStatusHandler(object? _, long speed)
+                {
+                    if (!cancel.IsCancellationRequested)
+                    {
+                        this.Status = $"Downloading voice data ({speed / 1024} KB/s)...";
+                    }
+                }
+
+                client.SpeedChangedEvent += voiceDataStatusHandler;
+                voiceArchive = await client.DownloadTorrent(manifest, torrent!, cancel);
+                client.SpeedChangedEvent -= voiceDataStatusHandler;
+                cancel.ThrowIfCancellationRequested();
+            }
 
             this.Status = "Extracting voice data...";
             await client.ExtractToVoiceFolder(voiceArchive, cancel);
@@ -119,7 +142,6 @@ namespace TrailsHelper.ViewModels
                 this.IsInProgress = true;
                 using var client = new SoraVoiceInstallModel(gameModel.Prefix, this.GamePath, gameModel.BattleVoiceFile);
                 client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
-
                 var cancel = this.InstallCancel.Token;
                 try
                 {
@@ -127,13 +149,7 @@ namespace TrailsHelper.ViewModels
                     this.Status = "Installation complete";
                     return result;
                 } 
-                catch (TaskCanceledException)
-                {
-                    this.Status = "Installation cancelled";
-                    this.CancelInstall();
-                    return false;
-                }
-                catch (OperationCanceledException)
+                catch (Exception e) when (e is TaskCanceledException || e is OperationCanceledException)
                 {
                     this.Status = "Installation cancelled";
                     this.CancelInstall();

@@ -60,6 +60,12 @@ namespace TrailsHelper.Support
 
         [JsonPropertyName("asset")]
         public string Asset { get; set; }
+
+        [JsonPropertyName("mega_api")]
+        public string MegaApiKey { get; set; }
+
+        [JsonPropertyName("mega")]
+        public Dictionary<string, string> Mega { get; set; }
     }
 #nullable enable
 }

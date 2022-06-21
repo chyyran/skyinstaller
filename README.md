@@ -23,17 +23,12 @@ All necessary files will be automatically downloaded and installed to the game i
 Troubleshooting
 ---------------
 
-### SkyInstaller is stuck on 'Downloading voice data...'
-The voice data from the Evolution releases are downloaded from the Internet Archive via torrent. Very rarely, the download may fail to connect properly. If this happens, you can retry the download
-by cancelling the installation and trying again. The voice data download will resume from where it left off. Also ensure that your router allows NAT port forwarding and that SkyInstaller is allowed
-through Windows Firewall.
-
 ### SkyInstaller is stuck on 'GitHub rate limit exceeded'
 SkyInstaller needs to fetch a manifest file and download the latest version of the [SoraVoice](https://github.com/ZhenjianYang/SoraVoice) mod and scripts from GitHub using the GitHub API, which limits
 how many times you can use it per hour. Try the install again in an hour.
 
-### SkyInstaller is stuck downloading something other than voice data.
-Required files other than the voice data are downloaded via HTTP. Check your internet connection and try again.
+### SkyInstaller is stuck 'Downloading...'
+Sometimes the download may stall on a slow internet connection. Check your internet connection, and try again.
 
 ### What happens if I cancel the installation midway?
 You can cancel midway through installing the mod. This will delete `dinput8.dll` as well as any battle voice data that may have been previously installed from the game directory.

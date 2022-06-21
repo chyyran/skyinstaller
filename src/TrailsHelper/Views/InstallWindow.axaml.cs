@@ -36,7 +36,7 @@ namespace TrailsHelper.Views
                 ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
                 WindowIcon = this.Icon,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                HasSystemDecorations = false,
+                SystemDecorations = SystemDecorations.BorderOnly
             }).ShowDialog(this);
 
 
@@ -47,6 +47,7 @@ namespace TrailsHelper.Views
             else
             {
                 e.Cancel = false;
+                this.ViewModel!.Status = "Cleaning up...";
                 this.ViewModel!.InstallCancel.Cancel();
             }
         }

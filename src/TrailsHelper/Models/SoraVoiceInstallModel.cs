@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using TrailsHelper.Support;
 using System.Threading;
+using CG.Web.MegaApiClient;
 
 namespace TrailsHelper.Models
 {
@@ -55,13 +56,14 @@ namespace TrailsHelper.Models
         public ClientEngine TorrentClient { get; }
 
         public event EventHandler<double>? ProgressChangedEvent;
+        public event EventHandler<long>? SpeedChangedEvent;
 
         public async Task<DownloadManifest> DownloadManifest(CancellationToken cancel = default)
         {
             var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri, cancel);
             cancel.ThrowIfCancellationRequested();
 
-            var manifest = await JsonSerializer.DeserializeAsync(stream, JsonContext.Default.DownloadManifest);
+            var manifest = await JsonSerializer.DeserializeAsync(stream, JsonContext.Default.DownloadManifest, cancel);
             return manifest!;
         }
 
@@ -73,8 +75,8 @@ namespace TrailsHelper.Models
             cancel.ThrowIfCancellationRequested();
 
             var outStream = new MemoryStream();
-            await stream.CopyToAsync(outStream);
-            await outStream.FlushAsync();
+            await stream.CopyToAsync(outStream, cancel);
+            await outStream.FlushAsync(cancel);
             return outStream;
         }
 
@@ -82,7 +84,7 @@ namespace TrailsHelper.Models
         {
             var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Scripts.Owner, manifest.Scripts.Repository);
             var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Scripts.Asset.FormatTemplateString(this)));
-            var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl);
+            var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl, cancel);
             cancel.ThrowIfCancellationRequested();
             
             var outStream = new MemoryStream();
@@ -102,7 +104,23 @@ namespace TrailsHelper.Models
             return;
         }
 
-        public async Task<TorrentManager> DownloadTorrentInfo(DownloadManifest manifest, CancellationToken cancel = default)
+        public async Task<Stream> DownloadVoiceFromMega(DownloadManifest manifest, CancellationToken cancel = default)
+        {
+            var key = manifest.Voice.Asset.FormatTemplateString(this);
+            string megakey = manifest.Voice.Mega[key];
+            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{key}.7z");
+            var megaClient = new MegaApiClient(new Options(manifest.Voice.MegaApiKey));
+            var megaUri = new Uri($"https://mega.nz/file/{megakey}");
+            await megaClient.LoginAnonymousAsync();
+            var megaNode = await megaClient.GetNodeFromLinkAsync(megaUri);
+            if (File.Exists(filename))
+                File.Delete(filename);
+            await megaClient.DownloadFileAsync(megaNode, filename, new Progress<double>(
+                d => this.ProgressChangedEvent?.Invoke(this, d)), cancel);
+            return File.Open(filename, System.IO.FileMode.Open, FileAccess.Read);
+        }
+
+        public async Task<TorrentManager> DownloadVoiceTorrentInfo(DownloadManifest manifest, CancellationToken cancel = default)
         {
             // http stream can't use random access.
             var torrentStreamHttp = await this.HttpClient.GetStreamAsync(manifest.Voice.Uri, cancel);
@@ -121,8 +139,12 @@ namespace TrailsHelper.Models
                 new TorrentSettingsBuilder()
                 {
                     CreateContainingDirectory = false,
+
+                    // always use webseeds to support IA torrents
                     WebSeedDelay = TimeSpan.Zero,
-                    WebSeedSpeedTrigger = 0,
+                    WebSeedSpeedTrigger = int.MaxValue,
+
+                    
                 }.ToSettings());
             this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
 
@@ -139,7 +161,7 @@ namespace TrailsHelper.Models
             return torrent;
         }
 
-        public async Task<Stream> DownloadVoiceTorrent(DownloadManifest manifest, TorrentManager torrent, CancellationToken cancel = default)
+        public async Task<Stream> DownloadTorrent(DownloadManifest manifest, TorrentManager torrent, CancellationToken cancel = default)
         {
             var asset = manifest.Voice.Asset.FormatTemplateString(this);
 
@@ -150,14 +172,16 @@ namespace TrailsHelper.Models
                     if (cancel.IsCancellationRequested)
                     {
                         await torrent.StopAsync();
+                        this.SpeedChangedEvent = null;
                         cancel.ThrowIfCancellationRequested();
+                        break;
                     }
-
-                    await Task.Delay(500);
-                    if (torrent.Peers.Seeds == 0)
-                    {
-                        await torrent.TrackerManager.AnnounceAsync(cancel);
-                    }
+                    await Task.Delay(1000);
+                    //if (torrent.Peers.Seeds == 0)
+                    //{
+                    //    await torrent.TrackerManager.AnnounceAsync(cancel);
+                    //}
+                    this.SpeedChangedEvent?.Invoke(this, torrent.Monitor.DownloadSpeed);
                     this.ProgressChangedEvent?.Invoke(this, torrent.PartialProgress);
                 }
 
@@ -194,7 +218,7 @@ namespace TrailsHelper.Models
                     ExtractFullPath = true,
                     Overwrite = true,
                 });
-            });
+            }, cancel);
         }
 
         public async Task ExtractToVoiceFolder(Stream modStream, CancellationToken cancel = default)
@@ -221,7 +245,7 @@ namespace TrailsHelper.Models
                     ExtractFullPath = true,
                     Overwrite = true,
                 });
-            });
+            }, cancel);
         }
 
         protected virtual void Dispose(bool disposing)
