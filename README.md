@@ -44,7 +44,7 @@ SkyInstaller assumes a fresh installation from Steam, which may conflict with ot
 installing other mods manually.
 
 ### What is 'Steamworks Common Redistributables'?
-SkyInstaller uses the Steam API to locate the installation path and verify ownership of the game . The Steam API needs an [AppID](https://developer.valvesoftware.com/wiki/Steam_Application_IDs) to
+SkyInstaller uses the Steam API to locate the installation path and verify ownership of the games. The Steam API needs an [AppID](https://developer.valvesoftware.com/wiki/Steam_Application_IDs) to
 initialize, and SkyInstaller borrows the AppID of the [Steamworks Common Redistributables](https://steamdb.info/app/228980/) for this purpose.
 
 ### How do I uninstall the mod?
