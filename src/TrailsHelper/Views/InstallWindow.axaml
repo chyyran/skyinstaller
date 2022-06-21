@@ -77,7 +77,7 @@
         </Grid.RowDefinitions>
         <StackPanel>
           <Label>Installing voice lines and battle voices to</Label>
-          <Label Margin="0 0 0 30" Content="{Binding GamePath}"/>
+          <Label Margin="0 0 0 30" Content="{Binding GamePath}" FontStyle="Italic" FontWeight="DemiBold"/>
           <Label>Installation time will depend on your internet speed.</Label>
           <Label>Closing this window will cancel the installation and revert any changes.</Label>
           <Label Margin="0 20 0 0">Downloading and extracting voice data may take a while.</Label>

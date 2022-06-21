@@ -116,8 +116,9 @@ namespace TrailsHelper.Models
 
         public async Task DownloadAndInstallBattleVoice(DownloadManifest manifest, string ext, CancellationToken cancel = default)
         {
-            var stream = await this.TryBestDownloadHttp(manifest.Battle.DirectUris ?? new[] { manifest.Battle.Uri }
-                .Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)), cancel);
+            var stream = await this.TryBestDownloadHttp((manifest.Battle.DirectUris ?? new() { manifest.Battle.Uri })
+                .Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)
+                ), cancel);
             cancel.ThrowIfCancellationRequested();
 
             using var outStream = File.Open(Path.Combine(this.GamePath, $"{this.BattleVoiceFile}.{ext}"), System.IO.FileMode.Create);

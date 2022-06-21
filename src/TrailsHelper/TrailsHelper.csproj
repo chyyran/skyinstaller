@@ -9,6 +9,7 @@
     <AssemblyName>SkyInstaller</AssemblyName>
     <ApplicationIcon>Assets/fc_config.ico</ApplicationIcon>
     <Version>1.2.0</Version>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
@@ -54,13 +55,73 @@
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+
   <ItemGroup>
     <!--This helps with theme dll-s trimming.
 	If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
 	https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
     <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
     <TrimmableAssembly Include="Avalonia.Themes.Default" />
+    <TrimmableAssembly Include="Material.Avalonia" />
+    <TrimmableAssembly Include="Material.Colors" />
+    <TrimmableAssembly Include="Material.DataGrid" />
+    <TrimmableAssembly Include="Material.Dialog" />
+    <TrimmableAssembly Include="Material.Ripple" />
+
+    <TrimmableAssembly Include="MessageBox.Avalonia" />
+
+    
+    <TrimmableAssembly Include="Microsoft.AspNet.WebApi.Client" />
+    <!-- We only use .net7.0 for OpenFileDialog, so all the rest can go -->
+    <TrimmableAssembly Include="System.Windows.Controls.Ribbon" />
+    <TrimmableAssembly Include="System.Windows.Forms" />
+    <TrimmableAssembly Include="System.Windows.Forms.Design" />
+    <TrimmableAssembly Include="System.Windows.Forms.Primitives" />
+    <TrimmableAssembly Include="System.Xaml" />
+    <TrimmableAssembly Include="System.Printing" />
+
+    <TrimmableAssembly Include="PresentationCore" />
+    <TrimmableAssembly Include="PresentationFramework" />
+    <TrimmableAssembly Include="PresentationFramework.Aero" />
+    <TrimmableAssembly Include="PresentationFramework.Aero2" />
+    <TrimmableAssembly Include="PresentationFramework.AeroLite" />
+    <TrimmableAssembly Include="PresentationFramework.Classic" />
+    <TrimmableAssembly Include="PresentationFramework.Luna" />
+    <TrimmableAssembly Include="PresentationFramework.Royale" />
+    <TrimmableAssembly Include="PresentationFramework-SystemCore" />
+    <TrimmableAssembly Include="PresentationFramework-SystemData" />
+    <TrimmableAssembly Include="PresentationFramework-SystemDrawing" />
+    <TrimmableAssembly Include="PresentationFramework-SystemXml" />
+    <TrimmableAssembly Include="PresentationFramework-SystemXmlLinq" />
+    <TrimmableAssembly Include="PresentationUI" />
+    <TrimmableAssembly Include="ReachFramework" />
+    <TrimmableAssembly Include="System.CodeDom" />
+
+    <TrimmableAssembly Include="System.Security.Cryptography.Pkcs" />
+    <TrimmableAssembly Include="System.Security.Cryptography.ProtectedData" />
+    <TrimmableAssembly Include="System.Security.Cryptography.Xml" />
+    <TrimmableAssembly Include="System.Configuration.ConfigurationManager" />
+    <TrimmableAssembly Include="WindowsFormsIntegration" />
+
+    <TrimmableAssembly Include="DirectWriteForwarder" />
+    <TrimmableAssembly Include="Microsoft.VisualBasic" />
+    <TrimmableAssembly Include="Microsoft.VisualBasic.Forms" />
+
+    <TrimmableAssembly Include="UIAutomationTypes" />
+    <TrimmableAssembly Include="UIAutomationClient" />
+    <TrimmableAssembly Include="UIAutomationClientSideProviders" />
+    <TrimmableAssembly Include="UIAutomationProvider" />
+    <TrimmableAssembly Include="WindowsBase" />
+
+    <TrimmableAssembly Include="System.Design"/>
+    <TrimmableAssembly Include="System.Diagnostics.EventLog"/>
+    <TrimmableAssembly Include="System.Diagnostics.PerformanceCounter"/>
+    <TrimmableAssembly Include="System.Drawing"/>
+    <TrimmableAssembly Include="System.Drawing.Common"/>
+    <TrimmableAssembly Include="System.Drawing.Design"/>
+
   </ItemGroup>
+  
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.15" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.15" />
