@@ -5,7 +5,6 @@
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="300"
              xmlns:vm="using:TrailsHelper.ViewModels"
              x:Class="TrailsHelper.Views.GameDisplay">
-
   <Grid>
     <StackPanel Spacing="5" Width="250" IsVisible="{Binding IsLoaded}" VerticalAlignment="Center">
       <Panel Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -17,7 +16,10 @@
       </Panel>
       <Label Content="{Binding Title}" HorizontalAlignment="Center"/>
       <Button Content="{Binding InstallButtonText}" HorizontalAlignment="Center" IsEnabled="{Binding IsInstalled}"
-              Command="{Binding InstallForGameCommand}"/>
+              Command="{Binding InstallForSteamGameCommand}"/>
+      <Button Content="Browse..." HorizontalAlignment="Center"
+              IsEnabled="True"
+        Command="{Binding BrowseThenInstallGameCommand}"/>
     </StackPanel>
     <Panel Width="200"  IsVisible="{Binding !IsLoaded}">
       <ProgressBar Classes="Circle" IsIndeterminate="True">

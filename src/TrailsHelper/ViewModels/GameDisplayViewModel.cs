@@ -5,6 +5,7 @@ using Avalonia.Platform;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -18,8 +19,12 @@ namespace TrailsHelper.ViewModels
     {
         GameModel _game;
         public GameModel Game => _game;
-        public ReactiveCommand<Unit, GameDisplayViewModel> InstallForGameCommand { get; }
+        public ReactiveCommand<Unit, GameDisplayViewModel> InstallForSteamGameCommand { get; }
+        public ReactiveCommand<Unit, GameDisplayViewModel> BrowseThenInstallGameCommand { get; }
+
         public Interaction<InstallViewModel, bool> ShowInstallDialog { get; }
+        public Interaction<GameDisplayViewModel, DirectoryInfo?> BrowseInstallFolderDialog { get; }
+
         private string _installWindowIcon { get; }
         public WindowIcon InstallWindowIcon => new(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
         public GameDisplayViewModel(Models.GameModel model, string installIcon)
@@ -30,11 +35,26 @@ namespace TrailsHelper.ViewModels
             _steamInstallButtonText = this.WhenAnyValue(x => x.IsInstalled)
                 .Select(x => x ? "Install to Steam version" : "Game not installed")
                 .ToProperty(this, x => x.InstallButtonText);
+
             this.ShowInstallDialog = new();
-            this.InstallForGameCommand = ReactiveCommand.CreateFromTask(async () =>
+            this.BrowseInstallFolderDialog = new();
+
+            this.InstallForSteamGameCommand = ReactiveCommand.CreateFromTask(async () =>
             {
                 var install = new InstallViewModel(this, this.SteamPath);
-                var result = await ShowInstallDialog.Handle(install);
+                var installResult = await ShowInstallDialog.Handle(install);
+                return this;
+            });
+            this.BrowseThenInstallGameCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                var browseResult = await BrowseInstallFolderDialog.Handle(this);
+                if (browseResult == null)
+                {
+                    return this;
+                }
+
+                var install = new InstallViewModel(this, browseResult.FullName);
+                var installResult = await ShowInstallDialog.Handle(install);
                 return this;
             });
         }

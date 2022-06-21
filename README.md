@@ -8,21 +8,17 @@ One-click installer for the Evolution voice mod for the *Trails in the Sky* seri
 
 ![image](https://user-images.githubusercontent.com/1000503/174701235-4ff814fc-bef6-4391-9242-97ab0786206c.png)
 
-SkyInstaller automatically downloads and installs [SoraVoice Lite](https://github.com/ZhenjianYang/SoraVoice) and the necessary voice data to an installed Steam version of the *Sky* trilogy.
+SkyInstaller automatically downloads and installs [SoraVoice Lite](https://github.com/ZhenjianYang/SoraVoice) and the necessary voice data to the game installation.
 
 Usage
 -----
 
-SkyInstaller only supports the Steam versions of the *Trails in the Sky* games published by XSEED.
+SkyInstaller only supports the English versions of the *Trails in the Sky* games published by XSEED. The Chinese or original Japanese versions are not supported.
 
-SkyInstaller does not work with any other versions of the game except the Steam versions, including the original Japanese PC release,
-the Chinese release, and the GOG or Humble Bundle releases. 
+SkyInstaller will automatically detect the game when it is installed via Steam. Simply press the 'Install to Steam version' button for the corresponding game,
+confirm the path is correct, and press install. To specify the location manually, press the 'Browse' button to find the location of the game executable.
 
-For non-Steam releases of the game, follow the instructions on the [PC Gaming Wiki](https://www.pcgamingwiki.com/wiki/The_Legend_of_Heroes:_Trails_in_the_Sky)
-to manually install the voice patches.
-
-SkyInstaller will automatically detect the game when it is installed. Simply press the 'Install Evolution Voices' button for the corresponding game,
-confirm the path is correct, and press install. All necessary files will be automatically downloaded and installed to the game installation.
+All necessary files will be automatically downloaded and installed to the game installation.
 
 Troubleshooting
 ---------------
