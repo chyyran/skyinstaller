@@ -2,6 +2,7 @@
 using ReactiveUI;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text.Json;
@@ -83,7 +84,9 @@ namespace TrailsHelper.ViewModels
                 voiceArchive = await client.DownloadVoiceFromMega(manifest, cancel);
                 cancel.ThrowIfCancellationRequested();
             }
-            catch (Exception e) when (e is NotSupportedException || e is ApiException)
+            catch (Exception e) when (e is NotSupportedException || e is ApiException 
+                || e is HttpRequestException
+                || (e is AggregateException a && a.InnerException is HttpRequestException))
             {
                 this.Status = "Downloading metadata...";
                 var torrent = await client.DownloadVoiceTorrentInfo(manifest, cancel);
@@ -158,6 +161,12 @@ namespace TrailsHelper.ViewModels
                 catch (Octokit.RateLimitExceededException)
                 {
                     this.Status = "GitHub rate limit exceeded";
+                    this.CancelInstall();
+                    return false;
+                }
+                catch (AggregateException e) when (e.InnerException != null)
+                {
+                    this.Status = $"Unknown error: {e.InnerException.GetType().Name}";
                     this.CancelInstall();
                     return false;
                 }

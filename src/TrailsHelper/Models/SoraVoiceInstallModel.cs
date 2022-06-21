@@ -176,11 +176,12 @@ namespace TrailsHelper.Models
                         cancel.ThrowIfCancellationRequested();
                         break;
                     }
-                    await Task.Delay(1000);
-                    //if (torrent.Peers.Seeds == 0)
-                    //{
-                    //    await torrent.TrackerManager.AnnounceAsync(cancel);
-                    //}
+                    await Task.Delay(5000, cancel);
+                    if (torrent.OpenConnections == 0)
+                    {
+                        await torrent.TrackerManager.AnnounceAsync(cancel);
+                        await torrent.TrackerManager.ScrapeAsync(cancel);
+                    }
                     this.SpeedChangedEvent?.Invoke(this, torrent.Monitor.DownloadSpeed);
                     this.ProgressChangedEvent?.Invoke(this, torrent.PartialProgress);
                 }
