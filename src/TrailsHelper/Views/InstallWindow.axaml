@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
-        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
          x:Class="TrailsHelper.Views.InstallWindow"
         WindowStartupLocation="CenterOwner"
         Height="500" Width="900"
@@ -29,38 +29,50 @@
             MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
-    <Grid>
+    <Grid VerticalAlignment="Stretch">
       <ExperimentalAcrylicBorder IsHitTestVisible="False">
         <ExperimentalAcrylicBorder.Material>
           <ExperimentalAcrylicMaterial
               BackgroundSource="Digger"
-              FallbackColor="Black"
+              FallbackColor="White"
               TintColor="White"
               TintOpacity="0"
-              MaterialOpacity="0.65" />
+              MaterialOpacity="0.4" />
         </ExperimentalAcrylicBorder.Material>
       </ExperimentalAcrylicBorder>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="300"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
-   
-      <StackPanel Grid.Column="0" Spacing="5" VerticalAlignment="Center">
-        <Panel IsVisible="{Binding GameModel.IsLoaded}" Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
-          <Border CornerRadius="3" BoxShadow="0 3 6 #10000000, 0 3 6 #20000000">
-            <Border ClipToBounds="True" CornerRadius="3">
-              <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding GameModel.CoverArt}"/>
+
+      <Panel Grid.Column="0">
+        <Panel.Background>
+          <ImageBrush TileMode="None"
+                      BitmapInterpolationMode="HighQuality"
+                      Stretch="UniformToFill"
+                      Source="{Binding GameModel.CoverArt}"
+                      Opacity="0.2"
+                      />
+        </Panel.Background>
+        <StackPanel Spacing="5" VerticalAlignment="Center">
+          <Panel IsVisible="{Binding GameModel.IsLoaded}" Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Border CornerRadius="3" BoxShadow="0 3 6 #10000000, 0 3 6 #20000000">
+              <Border ClipToBounds="True" CornerRadius="3">
+                <Image Width="200" Height="300" Stretch="Uniform" Source="{Binding GameModel.CoverArt}"/>
+              </Border>
             </Border>
-          </Border>
-        </Panel>
-        <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center" />
-        <Button HorizontalAlignment="Center" 
-                Background="Black" Command="{Binding InstallCommand}"
-                IsEnabled="{Binding !IsInProgress}"
-                >Install</Button>
-      </StackPanel>
+          </Panel>
+          <Label Content="{Binding GameModel.Title}" HorizontalAlignment="Center" />
+          <Button HorizontalAlignment="Center"
+                  Background="Black" Command="{Binding InstallCommand}"
+                  IsEnabled="{Binding !IsInProgress}"
+                  >
+            Install
+          </Button>
+        </StackPanel>
+      </Panel>
       
-      <Grid Margin="20 30 0 10" Grid.Column="1" HorizontalAlignment="Stretch" Grid.ColumnSpan="2">
+      <Grid Margin="20 30 0 10" Grid.Column="1" HorizontalAlignment="Stretch">
         <Grid.RowDefinitions>
           <RowDefinition Height="*"/>
           <RowDefinition Height="30"/>
