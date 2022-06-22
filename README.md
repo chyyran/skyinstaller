@@ -6,7 +6,8 @@ SkyInstaller
 
 One-click installer for the Evolution voice mod for the *Trails in the Sky* series.
 
-![image](https://user-images.githubusercontent.com/1000503/174701235-4ff814fc-bef6-4391-9242-97ab0786206c.png)
+![slice1](https://user-images.githubusercontent.com/1000503/174936993-612bc03a-1b80-42db-b233-2cd81fd689df.png)
+
 
 SkyInstaller automatically downloads and installs [SoraVoice Lite](https://github.com/ZhenjianYang/SoraVoice) and the necessary voice data to the game installation.
 
@@ -25,7 +26,7 @@ Troubleshooting
 
 ### SkyInstaller is stuck on 'GitHub rate limit exceeded'
 SkyInstaller needs to fetch a manifest file and download the latest version of the [SoraVoice](https://github.com/ZhenjianYang/SoraVoice) mod and scripts from GitHub using the GitHub API, which limits
-how many times you can use it per hour. Try the install again in an hour.
+how many times you can use it per hour. Try the install again later.
 
 ### SkyInstaller is stuck 'Downloading...'
 Sometimes the download may stall on a slow internet connection. Check your internet connection, and try again.
@@ -34,12 +35,11 @@ Sometimes the download may stall on a slow internet connection. Check your inter
 You can cancel midway through installing the mod. This will delete `dinput8.dll` as well as any battle voice data that may have been previously installed from the game directory.
 
 ### Can I use SkyInstaller with other mods?
-SkyInstaller assumes a fresh installation from Steam, which may conflict with other mods. It is suggested that the Evolution voice mods are installed via SkyInstaller *first*, before
-installing other mods manually.
+SkyInstaller assumes a fresh installation, so it may conflict with other mods. It is suggested that the Evolution voice mods are installed via SkyInstaller *first*, before installing other mods manually.
 
-### What is 'Steamworks Common Redistributables'?
+### Why does Steam say I'm playing 'Steamworks Common Redistributables'?
 SkyInstaller uses the Steam API to locate the installation path and verify ownership of the games. The Steam API needs an [AppID](https://developer.valvesoftware.com/wiki/Steam_Application_IDs) to
-initialize, and SkyInstaller borrows the AppID of the [Steamworks Common Redistributables](https://steamdb.info/app/228980/) for this purpose.
+initialize, and SkyInstaller borrows the AppID of the [Steamworks Common Redistributables](https://steamdb.info/app/228980/) for this purpose. 
 
 ### How do I uninstall the mod?
 SkyInstaller does not have a dedicated uninstaller for the Evolution voice mod. Manually delete `dinput8.dll` from the install folder to uninstall the mod.
