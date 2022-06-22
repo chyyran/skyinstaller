@@ -11,10 +11,11 @@
         Height="500" Width="900"
         MinHeight="500"
         MinWidth="900"
-        TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         Icon="{Binding GameModel.InstallWindowIcon}"
+        TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
         Title="{Binding WindowTitle}">
   <Grid ShowGridLines="True">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
