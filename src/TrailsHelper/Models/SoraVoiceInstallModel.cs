@@ -191,7 +191,7 @@ namespace TrailsHelper.Models
                     // always use webseeds to support IA torrents
                     WebSeedDelay = TimeSpan.Zero,
                     WebSeedSpeedTrigger = int.MaxValue,
-
+                    
                     
                 }.ToSettings());
             this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
@@ -224,7 +224,7 @@ namespace TrailsHelper.Models
                         cancel.ThrowIfCancellationRequested();
                         break;
                     }
-                    await Task.Delay(5000, cancel);
+                    await Task.Delay(1000, cancel);
                     if (torrent.OpenConnections == 0)
                     {
                         await torrent.TrackerManager.AnnounceAsync(cancel);

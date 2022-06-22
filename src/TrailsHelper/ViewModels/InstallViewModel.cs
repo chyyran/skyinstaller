@@ -176,13 +176,13 @@ namespace TrailsHelper.ViewModels
                 }
                 catch (AggregateException e) when (e.InnerException != null)
                 {
-                    this.Status = $"Unknown error: {e.InnerException.GetType().Name}";
+                    this.Status = $"Unknown error: {e.InnerException.GetType().Name}, {e.Message}";
                     this.CancelInstall();
                     return false;
                 }
                 catch (Exception e)
                 {
-                    this.Status = $"Unknown error: {e.GetType().Name}";
+                    this.Status = $"Unknown error: {e.GetType().Name}, {e.Message}";
                     this.CancelInstall();
                     return false;
                 }

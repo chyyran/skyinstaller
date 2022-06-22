@@ -113,12 +113,12 @@
     <TrimmableAssembly Include="UIAutomationProvider" />
     <TrimmableAssembly Include="WindowsBase" />
 
-    <TrimmableAssembly Include="System.Design"/>
-    <TrimmableAssembly Include="System.Diagnostics.EventLog"/>
-    <TrimmableAssembly Include="System.Diagnostics.PerformanceCounter"/>
-    <TrimmableAssembly Include="System.Drawing"/>
-    <TrimmableAssembly Include="System.Drawing.Common"/>
-    <TrimmableAssembly Include="System.Drawing.Design"/>
+    <TrimmableAssembly Include="System.Design" />
+    <TrimmableAssembly Include="System.Diagnostics.EventLog" />
+    <TrimmableAssembly Include="System.Diagnostics.PerformanceCounter" />
+    <TrimmableAssembly Include="System.Drawing" />
+    <TrimmableAssembly Include="System.Drawing.Common" />
+    <TrimmableAssembly Include="System.Drawing.Design" />
 
   </ItemGroup>
   
