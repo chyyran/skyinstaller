@@ -53,7 +53,8 @@ namespace TrailsHelper
         {
             var steamPath = GetSteamPath();
   
-            if (steamPath == null || !File.Exists(steamPath)) {
+            if (steamPath == null || !File.Exists(steamPath)
+                || File.Exists(Path.Combine(Environment.CurrentDirectory, "nosteam.txt"))) {
                 return false;
             }
 

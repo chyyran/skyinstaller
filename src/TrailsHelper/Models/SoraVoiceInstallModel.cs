@@ -198,7 +198,7 @@ namespace TrailsHelper.Models
             var torrentInfo = await Torrent.LoadAsync(torrentStream);
             if (TorrentClient.Value.Contains(torrentInfo))
             {
-                await TorrentClient.Value.RemoveAsync(torrentInfo);
+                await TorrentClient.Value.RemoveAsync(torrentInfo, RemoveMode.KeepAllData);
             }
 
             var torrent = await TorrentClient.Value.AddAsync(
@@ -269,7 +269,7 @@ namespace TrailsHelper.Models
                     reader.Cancel();
                 }
                 bytesUncompressed += args.ReaderProgress?.BytesTransferred ?? 0;
-                this.ProgressChangedEvent?.Invoke(this, bytesUncompressed / (double)totalSize);
+                this.ProgressChangedEvent?.Invoke(this, Math.Min((bytesUncompressed / (double)totalSize) * 99, 99.8));
             };
 
             await Task.Run(() =>
@@ -284,6 +284,8 @@ namespace TrailsHelper.Models
                     ExtractFullPath = true,
                     Overwrite = true,
                 });
+
+                this.ProgressChangedEvent?.Invoke(this, 100);
             }, cancel);
         }
 
@@ -300,7 +302,7 @@ namespace TrailsHelper.Models
                     reader.Cancel();
                 }
                 bytesUncompressed += args.ReaderProgress?.BytesTransferred ?? 0;
-                this.ProgressChangedEvent?.Invoke(this, bytesUncompressed / (double)totalSize);
+                this.ProgressChangedEvent?.Invoke(this, Math.Min((bytesUncompressed / (double)totalSize) * 99, 99.8));
             };
 
             await Task.Run(() =>
@@ -310,6 +312,7 @@ namespace TrailsHelper.Models
                     ExtractFullPath = true,
                     Overwrite = true,
                 });
+                this.ProgressChangedEvent?.Invoke(this, 100);
             }, cancel);
         }
 
