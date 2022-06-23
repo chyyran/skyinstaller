@@ -176,23 +176,31 @@ namespace TrailsHelper.ViewModels
 
             this.Status = "Extracting voice data...";
             await client.ExtractToVoiceFolder(voiceArchive, cancel);
+            cancel.ThrowIfCancellationRequested();
 
             this.Status = "Downloading SoraVoiceLite...";
             using Stream modArchive = await client.DownloadLatestMod(manifest, cancel);
+            cancel.ThrowIfCancellationRequested();
 
             this.Status = "Extracting SoraVoiceLite...";
             await client.ExtractToGameRoot(modArchive!, cancel);
+            cancel.ThrowIfCancellationRequested();
 
             this.Status = "Downloading script files...";
             using Stream scriptArchive = await client.DownloadLatestScripts(manifest, cancel);
+            cancel.ThrowIfCancellationRequested();
 
             this.Status = "Extracting scripts...";
             await client.ExtractToVoiceFolder(scriptArchive, cancel);
+            cancel.ThrowIfCancellationRequested();
 
             this.Status = "Downloading battle voices...";
             await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
+            cancel.ThrowIfCancellationRequested();
 
             await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
+            cancel.ThrowIfCancellationRequested();
+
             return true;
         }
 
