@@ -23,12 +23,14 @@ All necessary files will be automatically downloaded and installed to the game i
 
 Troubleshooting
 ---------------
+### SkyInstaller is stuck on 'Waiting for Steam'
+If Steam is installed, SkyInstaller needs the Steam API to find the installation location of the game. Ensure that Steam is running and that you are logged in to Steam. Alternatively, you can disable Steam integration by creating a `nosteam.txt` file in the same folder as SkyInstaller.
 
 ### SkyInstaller is stuck on 'GitHub rate limit exceeded'
 SkyInstaller needs to fetch a manifest file and download the latest version of the [SoraVoice](https://github.com/ZhenjianYang/SoraVoice) mod and scripts from GitHub using the GitHub API, which limits
 how many times you can use it per hour. Try the install again later.
 
-### SkyInstaller is stuck 'Downloading...'
+### SkyInstaller is stuck on 'Downloading...'
 Sometimes the download may stall on a slow internet connection. Check your internet connection, and try again.
 
 ### What happens if I cancel the installation midway?
