@@ -32,6 +32,14 @@ namespace TrailsHelper.Models
         private static readonly string ManifestUri = "https://github.com/chyyran/skyinstaller/releases/latest/download/manifest.json";
         private bool disposedValue;
 
+        private static Lazy<ClientEngine> TorrentClient = new(() =>
+        {
+            return new ClientEngine(new EngineSettingsBuilder()
+            {
+                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache"),
+            }.ToSettings());
+        }, false);
+
         public SoraVoiceInstallModel(string modPrefix, string gamePath, string battleVoiceFile)
         {
             this.ScriptPrefix = modPrefix;
@@ -42,12 +50,7 @@ namespace TrailsHelper.Models
             var ph = new ProgressMessageHandler(handler);
 
             ph.HttpReceiveProgress += (_, args) => this.ProgressChangedEvent?.Invoke(this, ((double)args.BytesTransferred / args.TotalBytes) * 100 ?? 0);
-
             this.HttpClient = new HttpClient(ph);
-            this.TorrentClient = new ClientEngine(new EngineSettingsBuilder()
-            {
-                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache_{this.ScriptPrefix}"),
-            }.ToSettings());
         }
 
         public string ScriptPrefix { get; }
@@ -55,7 +58,6 @@ namespace TrailsHelper.Models
         public string GamePath { get; }
         public GitHubClient GithubClient { get; }
         public HttpClient HttpClient { get; }
-        public ClientEngine TorrentClient { get; }
 
         public event EventHandler<double>? ProgressChangedEvent;
         public event EventHandler<long>? SpeedChangedEvent;
@@ -181,7 +183,7 @@ namespace TrailsHelper.Models
 
             torrentStream.Seek(0, SeekOrigin.Begin);
 
-            var torrent = await this.TorrentClient.AddAsync(
+            var torrent = await TorrentClient.Value.AddAsync(
                 await Torrent.LoadAsync(torrentStream), 
                 Path.Combine(Environment.CurrentDirectory, $"skyinst_{this.ScriptPrefix}"),
                 new TorrentSettingsBuilder()
@@ -230,7 +232,6 @@ namespace TrailsHelper.Models
                         await torrent.TrackerManager.AnnounceAsync(cancel);
                         await torrent.TrackerManager.ScrapeAsync(cancel);
                     }
-                    this.SpeedChangedEvent?.Invoke(this, torrent.Monitor.DownloadSpeed);
                     this.SpeedChangedEvent?.Invoke(this, torrent.Monitor.DownloadRate);
                     this.ProgressChangedEvent?.Invoke(this, torrent.PartialProgress);
                 }
@@ -304,7 +305,6 @@ namespace TrailsHelper.Models
                 if (disposing)
                 {
                     this.HttpClient.Dispose();
-                    this.TorrentClient.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
