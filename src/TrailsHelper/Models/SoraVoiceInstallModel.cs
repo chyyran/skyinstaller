@@ -144,9 +144,15 @@ namespace TrailsHelper.Models
             var stream = await this.TryBestDownloadHttp(manifest.Voice.DirectUris
                .Select(uri => uri.FormatTemplateString(this)), cancel);
                     cancel.ThrowIfCancellationRequested();
-            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{this.ScriptPrefix}.7z");
+            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{this.ScriptPrefix}_{Random.Shared.Next(100000, 1000000)}.7z");
 
-            var outStream = File.Open(filename, System.IO.FileMode.Create, FileAccess.ReadWrite);
+            var outStream = File.Open(filename, new FileStreamOptions()
+            {
+                Mode = System.IO.FileMode.Create,
+                Access = FileAccess.ReadWrite,
+                BufferSize = 8096,
+                Options = FileOptions.DeleteOnClose,
+            });
             await stream.CopyToAsync(outStream, cancel);
             await outStream.FlushAsync(cancel);
             outStream.Seek(0, SeekOrigin.Begin);
@@ -158,16 +164,20 @@ namespace TrailsHelper.Models
         {
             var key = manifest.Voice.Asset.FormatTemplateString(this);
             string megakey = manifest.Voice.Mega[key];
-            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{key}.7z");
+            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{key}_{Random.Shared.Next(100000, 1000000)}.7z");
             var megaClient = new MegaApiClient(new Options(manifest.Voice.MegaApiKey));
             var megaUri = new Uri($"https://mega.nz/file/{megakey}");
             await megaClient.LoginAnonymousAsync();
             var megaNode = await megaClient.GetNodeFromLinkAsync(megaUri);
-            if (File.Exists(filename))
-                File.Delete(filename);
             await megaClient.DownloadFileAsync(megaNode, filename, new Progress<double>(
                 d => this.ProgressChangedEvent?.Invoke(this, d)), cancel);
-            return File.Open(filename, System.IO.FileMode.Open, FileAccess.Read);
+            return File.Open(filename, new FileStreamOptions()
+            {
+                Mode = System.IO.FileMode.Open,
+                Access = FileAccess.Read,
+                BufferSize = 8096,
+                Options = FileOptions.DeleteOnClose,
+            });
         }
 
         public async Task<TorrentManager> DownloadVoiceTorrentInfo(DownloadManifest manifest, CancellationToken cancel = default)
@@ -183,18 +193,23 @@ namespace TrailsHelper.Models
 
             torrentStream.Seek(0, SeekOrigin.Begin);
 
+            // since we are sharing the torrentclient make sure that
+            // we don't re-add the torrent.
+            var torrentInfo = await Torrent.LoadAsync(torrentStream);
+            if (TorrentClient.Value.Contains(torrentInfo))
+            {
+                await TorrentClient.Value.RemoveAsync(torrentInfo);
+            }
+
             var torrent = await TorrentClient.Value.AddAsync(
                 await Torrent.LoadAsync(torrentStream), 
                 Path.Combine(Environment.CurrentDirectory, $"skyinst_{this.ScriptPrefix}"),
                 new TorrentSettingsBuilder()
                 {
                     CreateContainingDirectory = false,
-
                     // always use webseeds to support IA torrents
                     WebSeedDelay = TimeSpan.Zero,
                     WebSeedSpeedTrigger = int.MaxValue,
-                    
-                    
                 }.ToSettings());
             this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
 

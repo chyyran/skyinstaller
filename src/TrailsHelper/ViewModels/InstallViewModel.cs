@@ -195,6 +195,10 @@ namespace TrailsHelper.ViewModels
                 this.Status = "Extracting voice data...";
                 await client.ExtractToVoiceFolder(voiceArchive, cancel);
 
+
+                await voiceArchive.DisposeAsync();
+                await scriptArchive.DisposeAsync();
+                await modArchive.DisposeAsync();
                 return true;
             }
             finally
