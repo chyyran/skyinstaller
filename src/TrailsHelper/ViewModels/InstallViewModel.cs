@@ -171,37 +171,36 @@ namespace TrailsHelper.ViewModels
             this.Status = "Downloading manifest...";
             var manifest = await client.DownloadManifest(cancel);
 
-            using Stream voiceArchive = await DoVoiceDownload(client, manifest, cancel);
-            cancel.ThrowIfCancellationRequested();
+            try
+            {
+                this.Status = "Downloading SoraVoiceLite...";
+                using Stream modArchive = await client.DownloadLatestMod(manifest, cancel);
 
-            this.Status = "Extracting voice data...";
-            await client.ExtractToVoiceFolder(voiceArchive, cancel);
-            cancel.ThrowIfCancellationRequested();
+                this.Status = "Extracting SoraVoiceLite...";
+                await client.ExtractToGameRoot(modArchive!, cancel);
 
-            this.Status = "Downloading SoraVoiceLite...";
-            using Stream modArchive = await client.DownloadLatestMod(manifest, cancel);
-            cancel.ThrowIfCancellationRequested();
+                this.Status = "Downloading script files...";
+                using Stream scriptArchive = await client.DownloadLatestScripts(manifest, cancel);
 
-            this.Status = "Extracting SoraVoiceLite...";
-            await client.ExtractToGameRoot(modArchive!, cancel);
-            cancel.ThrowIfCancellationRequested();
+                this.Status = "Extracting scripts...";
+                await client.ExtractToVoiceFolder(scriptArchive, cancel);
 
-            this.Status = "Downloading script files...";
-            using Stream scriptArchive = await client.DownloadLatestScripts(manifest, cancel);
-            cancel.ThrowIfCancellationRequested();
+                this.Status = "Downloading battle voices...";
+                await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
 
-            this.Status = "Extracting scripts...";
-            await client.ExtractToVoiceFolder(scriptArchive, cancel);
-            cancel.ThrowIfCancellationRequested();
+                await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
 
-            this.Status = "Downloading battle voices...";
-            await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
-            cancel.ThrowIfCancellationRequested();
+                using Stream voiceArchive = await DoVoiceDownload(client, manifest, cancel);
 
-            await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
-            cancel.ThrowIfCancellationRequested();
+                this.Status = "Extracting voice data...";
+                await client.ExtractToVoiceFolder(voiceArchive, cancel);
 
-            return true;
+                return true;
+            }
+            finally
+            {
+
+            }
         }
 
         public async Task<bool> DoInstall(CancellationToken cancel)
