@@ -23,6 +23,16 @@
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'PublishZip'">
+    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+    <PublishTrimmed>true</PublishTrimmed>
+    <PublishSingleFile>true</PublishSingleFile>
+    <Optimize>true</Optimize>
+    <DebugSymbols>false</DebugSymbols>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'PublishAot'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishTrimmed>true</PublishTrimmed>
