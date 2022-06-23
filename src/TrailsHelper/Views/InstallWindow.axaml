@@ -11,7 +11,7 @@
         Height="500" Width="900"
         MinHeight="500"
         MinWidth="900"
-        Background="{x:Null}"
+        Background="Transparent"
         Icon="{Binding GameModel.InstallWindowIcon}"
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"

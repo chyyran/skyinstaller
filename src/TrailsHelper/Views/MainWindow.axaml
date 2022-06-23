@@ -9,7 +9,7 @@
         Height="500" Width="900"
         MinHeight="450"
         MinWidth="750"
-        Background="{x:Null}"
+        Background="Transparent"
         x:Class="TrailsHelper.Views.MainWindow"
         Icon="/Assets/fc_config.ico"
         TransparencyLevelHint="AcrylicBlur"
