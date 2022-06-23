@@ -231,6 +231,7 @@ namespace TrailsHelper.Models
                         await torrent.TrackerManager.ScrapeAsync(cancel);
                     }
                     this.SpeedChangedEvent?.Invoke(this, torrent.Monitor.DownloadSpeed);
+                    this.SpeedChangedEvent?.Invoke(this, torrent.Monitor.DownloadRate);
                     this.ProgressChangedEvent?.Invoke(this, torrent.PartialProgress);
                 }
 

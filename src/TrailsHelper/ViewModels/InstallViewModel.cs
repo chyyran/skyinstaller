@@ -162,7 +162,8 @@ namespace TrailsHelper.ViewModels
                     this.Status = "Installation complete";
                     return result;
                 } 
-                catch (Exception e) when (e is TaskCanceledException || e is OperationCanceledException)
+                catch (Exception e) when (e is TaskCanceledException || e is OperationCanceledException
+                    || (e is InvalidOperationException && e.Message == "Reader has been cancelled."))
                 {
                     this.Status = "Installation cancelled";
                     this.CancelInstall();
