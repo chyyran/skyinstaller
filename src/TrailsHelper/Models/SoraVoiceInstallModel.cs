@@ -81,6 +81,20 @@ namespace TrailsHelper.Models
 
         public async Task<DownloadManifest> DownloadManifest(CancellationToken cancel = default)
         {
+            if (File.Exists(Path.Combine(Environment.CurrentDirectory, "manifest.json")))
+            {
+                try
+                {
+                    var localStream = File.OpenRead(Path.Combine(Environment.CurrentDirectory, "manifest.json"));
+                    var localManifest = await JsonSerializer.DeserializeAsync(localStream, JsonContext.Default.DownloadManifest, cancel);
+                    return localManifest!;
+                }
+                catch
+                {
+
+                }
+            }
+
             var stream = await this.HttpClient.GetStreamAsync(SoraVoiceInstallModel.ManifestUri, cancel);
             cancel.ThrowIfCancellationRequested();
 
