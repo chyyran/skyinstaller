@@ -23,6 +23,9 @@ All necessary files will be automatically downloaded and installed to the game i
 
 Troubleshooting
 ---------------
+### SkyInstaller does not start.
+The single-file download should work on the majority of systems but sometimes an aggressive antivirus might delete a necessary DLL library. Try the [non self-extracting ZIP file](https://github.com/chyyran/skyinstaller/releases/latest/download/SkyInstaller.zip) and see if it might work. 
+
 ### SkyInstaller is stuck on 'Waiting for Steam'
 If Steam is installed, SkyInstaller needs the Steam API to find the installation location of the game. Ensure that Steam is running and that you are logged in to Steam. Alternatively, you can disable Steam integration by creating a `nosteam.txt` file in the same folder as SkyInstaller.
 
