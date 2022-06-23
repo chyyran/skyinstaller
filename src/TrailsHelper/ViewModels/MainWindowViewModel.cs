@@ -19,16 +19,20 @@ namespace TrailsHelper.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private bool _isSteamRunning = false;
-        public bool SteamInitComplete { get => _isSteamRunning; set => this.RaiseAndSetIfChanged(ref _isSteamRunning, value); }
-        
+        private bool _steamInitComplete = false;
+        public bool SteamInitComplete { get => _steamInitComplete; set => this.RaiseAndSetIfChanged(ref _steamInitComplete, value); }
+
+        private bool _steamDisabled = false;
+        public bool SteamDisabled { get => _steamDisabled; set => this.RaiseAndSetIfChanged(ref _steamDisabled, value); }
+
         public MainWindowViewModel()
         {
             RxApp.MainThreadScheduler.Schedule(this.ActivateSteam);
+            RxApp.MainThreadScheduler.Schedule(this.LoadCover);
             this.WhenAnyValue(x => x.SteamInitComplete)
                 .Where(x => x)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(this.LoadAll!);
+                .Subscribe(this.LoadSteamStatus!);
         }
 
         public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A", "ed6_win_DX9.exe"), "avares://SkyInstaller/Assets/fc.ico");
@@ -37,19 +41,36 @@ namespace TrailsHelper.ViewModels
 
         public async void ActivateSteam()
         {
-            if (await Steam.StartSteam())
+            bool steamInstalled = await Steam.StartSteam();
+            if (steamInstalled)
             {
                 await Steam.LoopInit();
-            };
+            }
             // even if steam init fails, we need to show the main menu.
             this.SteamInitComplete = true;
+            this.SteamDisabled = !steamInstalled;
         }
 
-        private async void LoadAll(bool s)
+        private async void LoadCover()
         {
-            await this.ContextFC.Load();
-            await this.ContextSC.Load();
-            await this.Context3rd.Load();
+            await this.ContextFC.LoadCover();
+            await this.ContextSC.LoadCover();
+            await this.Context3rd.LoadCover();
+        }
+
+        private async void LoadSteamStatus(bool s)
+        {
+            this.ContextFC.IsSteamDisabled = this.SteamDisabled;
+            this.ContextSC.IsSteamDisabled = this.SteamDisabled;
+            this.Context3rd.IsSteamDisabled = this.SteamDisabled;
+
+            this.ContextFC.IsSteamReady = true;
+            this.ContextSC.IsSteamReady = true;
+            this.Context3rd.IsSteamReady = true;
+
+            await this.ContextFC.LoadSteam();
+            await this.ContextSC.LoadSteam();
+            await this.Context3rd.LoadSteam();
         }
     }
 }

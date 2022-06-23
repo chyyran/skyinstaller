@@ -32,8 +32,15 @@ namespace TrailsHelper.ViewModels
             _game = model;
             _installWindowIcon = installIcon;
             var ico = new WindowIcon(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
-            _steamInstallButtonText = this.WhenAnyValue(x => x.IsInstalled)
-                .Select(x => x ? "Install to Steam version" : "Game not installed")
+            _steamInstallButtonText = this.WhenAnyValue(x => x.IsInstalled, x => x.IsSteamReady)
+                .Select(value =>
+                {
+                    var (installed, steamReady) = value;
+                    if (!steamReady)
+                        return "Waiting for Steam...";
+
+                    return installed ? "Install to Steam version" : "Game not installed";
+                })
                 .ToProperty(this, x => x.InstallButtonText);
 
             this.ShowInstallDialog = new();
@@ -69,6 +76,12 @@ namespace TrailsHelper.ViewModels
         private bool _isInstalled = false;
         public bool IsInstalled { get => _isInstalled; set => this.RaiseAndSetIfChanged(ref _isInstalled, value); }
 
+        private bool _isSteamReady = false;
+        public bool IsSteamReady { get => _isSteamReady; set => this.RaiseAndSetIfChanged(ref _isSteamReady, value); }
+
+        private bool _isSteamDisabled = false;
+        public bool IsSteamDisabled { get => _isSteamDisabled; set => this.RaiseAndSetIfChanged(ref _isSteamDisabled, value); }
+
         private bool _isLoaded = false;
         public bool IsLoaded { get => _isLoaded; set => this.RaiseAndSetIfChanged(ref _isLoaded, value); }
 
@@ -84,19 +97,18 @@ namespace TrailsHelper.ViewModels
 
         public string BattleVoiceFile => _game.BattleVoiceFile;
 
-        private async Task LoadCover()
+        public async Task LoadCover()
         {
             await using var imageStream = await _game.LoadCoverBitmapAsync();
             this.CoverArt = await Task.Run(() => Bitmap.DecodeToWidth(imageStream, 400));
+            this.IsLoaded = true;
         }
 
-        public async Task Load()
+        public async Task LoadSteam()
         {
-            await this.LoadCover();
             this.IsInstalled = _game.Locator.IsInstalled();
             if (this.IsInstalled) 
                 this.SteamPath = _game.Locator.GetInstallDirectory()!.FullName;
-            this.IsLoaded = true;
         }
     }
 }

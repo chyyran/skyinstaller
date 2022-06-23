@@ -15,7 +15,7 @@
         </Border>
       </Panel>
       <Label Content="{Binding Title}" HorizontalAlignment="Center"/>
-      <Button Content="{Binding InstallButtonText}" HorizontalAlignment="Center" IsEnabled="{Binding IsInstalled}"
+      <Button IsVisible="{Binding !IsSteamDisabled}" Content="{Binding InstallButtonText}" HorizontalAlignment="Center" IsEnabled="{Binding IsInstalled}"
               Command="{Binding InstallForSteamGameCommand}"/>
       <Button Content="Browse..." HorizontalAlignment="Center"
               IsEnabled="True"
