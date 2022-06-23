@@ -37,7 +37,12 @@ namespace TrailsHelper.Models
             return new ClientEngine(new EngineSettingsBuilder()
             {
                 CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache"),
-            }.ToSettings());
+                StaleRequestTimeout = TimeSpan.FromSeconds(120),
+                WebSeedConnectionTimeout = TimeSpan.FromSeconds(90),
+                // always use webseeds to support IA torrents
+                WebSeedDelay = TimeSpan.Zero,
+                WebSeedSpeedTrigger = int.MaxValue,
+            }.ToSettings()); ;
         }, false);
 
         public SoraVoiceInstallModel(string modPrefix, string gamePath, string battleVoiceFile)
@@ -216,14 +221,11 @@ namespace TrailsHelper.Models
             }
 
             var torrent = await TorrentClient.Value.AddAsync(
-                await Torrent.LoadAsync(torrentStream), 
+                torrentInfo, 
                 Path.Combine(Environment.CurrentDirectory, $"skyinst_{this.ScriptPrefix}"),
                 new TorrentSettingsBuilder()
                 {
                     CreateContainingDirectory = false,
-                    // always use webseeds to support IA torrents
-                    WebSeedDelay = TimeSpan.Zero,
-                    WebSeedSpeedTrigger = int.MaxValue,
                 }.ToSettings());
             this.ProgressChangedEvent?.Invoke(this, torrent.Progress);
 
