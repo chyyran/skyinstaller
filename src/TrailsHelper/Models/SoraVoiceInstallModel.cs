@@ -96,7 +96,7 @@ namespace TrailsHelper.Models
             {
                 try
                 {
-                    var downloadUri = new Uri(uri.FormatTemplateString(this));
+                    var downloadUri = new Uri(uri.FormatTemplateString(this), new UriCreationOptions() { DangerousDisablePathAndQueryCanonicalization = false });
                     if (downloadUri.Scheme == "s3")
                         downloadUri = GetS3HttpUrl(manifest, downloadUri);
                     var stream = await this.HttpClient.GetStreamAsync(downloadUri, cancel);
@@ -107,7 +107,7 @@ namespace TrailsHelper.Models
                     continue;
                 }
             }
-            throw new HttpRequestException("None of the provided URIs were avaialble.");
+            throw new HttpRequestException("None of the provided URIs were available.");
         }
 
         public async Task<DownloadManifest> DownloadManifest(CancellationToken cancel = default)
@@ -133,11 +133,30 @@ namespace TrailsHelper.Models
             return manifest!;
         }
 
+        private async Task<IEnumerable<string>> TryGetGithubUrls(Github github)
+        {
+            var urls = new List<string>();
+
+            try
+            {
+                var releases = await this.GithubClient.Repository.Release.GetLatest(github.Owner, github.Repository);
+                var asset = releases.Assets.First(s => s.Name.StartsWith(github.Asset.FormatTemplateString(this)));
+                urls.Add(asset.BrowserDownloadUrl);
+            }
+            catch
+            {
+                // Github failed and we have no backup.
+                if (!github.DirectUris.Any())
+                    throw;
+            }
+
+            return urls.Concat(github.DirectUris);
+        }
+
         public async Task<Stream> DownloadLatestMod(DownloadManifest manifest, CancellationToken cancel = default)
         {
-            var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Mod.Owner, manifest.Mod.Repository);
-            var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Mod.Asset.FormatTemplateString(this)));
-            var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl, cancel);
+            var urls = await TryGetGithubUrls(manifest.Mod);
+            var stream = await this.TryBestDownloadHttp(manifest, urls, cancel);
             cancel.ThrowIfCancellationRequested();
 
             var outStream = new MemoryStream();
@@ -149,9 +168,8 @@ namespace TrailsHelper.Models
 
         public async Task<Stream> DownloadLatestScripts(DownloadManifest manifest, CancellationToken cancel = default)
         {
-            var releases = await this.GithubClient.Repository.Release.GetLatest(manifest.Scripts.Owner, manifest.Scripts.Repository);
-            var asset = releases.Assets.First(s => s.Name.StartsWith(manifest.Scripts.Asset.FormatTemplateString(this)));
-            var stream = await this.HttpClient.GetStreamAsync(asset.BrowserDownloadUrl, cancel);
+            var urls = await TryGetGithubUrls(manifest.Scripts);
+            var stream = await this.TryBestDownloadHttp(manifest, urls, cancel);
             cancel.ThrowIfCancellationRequested();
             
             var outStream = new MemoryStream();

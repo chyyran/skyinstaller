@@ -17,7 +17,7 @@ namespace TrailsHelper.Support
         public List<string> DirectUris { get; set; }
     }
 
-    public class Mod
+    public class Github
     {
         [JsonPropertyName("owner")]
         public string Owner { get; set; }
@@ -27,6 +27,9 @@ namespace TrailsHelper.Support
 
         [JsonPropertyName("asset")]
         public string Asset { get; set; }
+
+        [JsonPropertyName("directs")]
+        public List<string> DirectUris { get; set; }
     }
 
     public class S3
@@ -47,10 +50,10 @@ namespace TrailsHelper.Support
     public class DownloadManifest
     {
         [JsonPropertyName("mod")]
-        public Mod Mod { get; set; }
+        public Github Mod { get; set; }
 
         [JsonPropertyName("scripts")]
-        public Scripts Scripts { get; set; }
+        public Github Scripts { get; set; }
 
         [JsonPropertyName("battle")]
         public Battle Battle { get; set; }
@@ -61,19 +64,6 @@ namespace TrailsHelper.Support
         [JsonPropertyName("s3")]
         public S3 S3 { get; set; }
     }
-
-    public class Scripts
-    {
-        [JsonPropertyName("owner")]
-        public string Owner { get; set; }
-
-        [JsonPropertyName("repository")]
-        public string Repository { get; set; }
-
-        [JsonPropertyName("asset")]
-        public string Asset { get; set; }
-    }
-
     public class Voice
     {
         [JsonPropertyName("uri")]
