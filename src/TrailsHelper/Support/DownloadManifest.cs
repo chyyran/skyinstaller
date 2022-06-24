@@ -29,6 +29,21 @@ namespace TrailsHelper.Support
         public string Asset { get; set; }
     }
 
+    public class S3
+    {
+        [JsonPropertyName("bucket")]
+        public string Bucket { get; set; }
+
+        [JsonPropertyName("region")]
+        public string Region { get; set; }
+
+        [JsonPropertyName("access")]
+        public string AccessKey { get; set; }
+
+        [JsonPropertyName("secret")]
+        public string SecretKey { get; set; }
+    }
+
     public class DownloadManifest
     {
         [JsonPropertyName("mod")]
@@ -42,6 +57,9 @@ namespace TrailsHelper.Support
 
         [JsonPropertyName("voice")]
         public Voice Voice { get; set; }
+
+        [JsonPropertyName("s3")]
+        public S3 S3 { get; set; }
     }
 
     public class Scripts

@@ -17,6 +17,8 @@ using System.Threading;
 using CG.Web.MegaApiClient;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
+using Amazon.S3;
+using Amazon.Runtime;
 
 namespace TrailsHelper.Models
 {
@@ -67,13 +69,37 @@ namespace TrailsHelper.Models
         public event EventHandler<double>? ProgressChangedEvent;
         public event EventHandler<long>? SpeedChangedEvent;
 
-        private async Task<Stream> TryBestDownloadHttp(IEnumerable<string> uris, CancellationToken cancel = default)
+        private static Uri? GetS3HttpUrl(DownloadManifest manifest, Uri s3, int hours = 12)
+        {
+            if (manifest.S3 == null || s3.Scheme != "s3")
+                return null;
+
+            try
+            {
+                var client = new AmazonS3Client(new BasicAWSCredentials(manifest.S3.AccessKey, manifest.S3.SecretKey), Amazon.RegionEndpoint.GetBySystemName(manifest.S3.Region));
+                return new(client.GetPreSignedURL(new()
+                {
+                    BucketName = manifest.S3.Bucket,
+                    Key = $"{s3.Host}{s3.AbsolutePath}",
+                    Expires = DateTime.Now.AddHours(hours),
+                    Verb = HttpVerb.GET
+                }));
+            } 
+            catch
+            {
+                return null;
+            }
+        }
+        private async Task<Stream> TryBestDownloadHttp(DownloadManifest manifest, IEnumerable<string> uris, CancellationToken cancel = default)
         {
             foreach (var uri in uris)
             {
                 try
                 {
-                    var stream = await this.HttpClient.GetStreamAsync(uri, cancel);
+                    var downloadUri = new Uri(uri.FormatTemplateString(this));
+                    if (downloadUri.Scheme == "s3")
+                        downloadUri = GetS3HttpUrl(manifest, downloadUri);
+                    var stream = await this.HttpClient.GetStreamAsync(downloadUri, cancel);
                     return stream;
                 }
                 catch
@@ -143,7 +169,7 @@ namespace TrailsHelper.Models
                 directUris = new() { manifest.Battle.Uri };
             }
 
-            var stream = await this.TryBestDownloadHttp(directUris.Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)
+            var stream = await this.TryBestDownloadHttp(manifest, directUris.Select(uri => uri.FormatTemplateString(this).Replace("$ext", ext)
                 ), cancel);
             cancel.ThrowIfCancellationRequested();
 
@@ -160,7 +186,7 @@ namespace TrailsHelper.Models
                 throw new ArgumentException("Direct download URIs were not found.");
             }
 
-            var stream = await this.TryBestDownloadHttp(manifest.Voice.DirectUris
+            var stream = await this.TryBestDownloadHttp(manifest, manifest.Voice.DirectUris
                .Select(uri => uri.FormatTemplateString(this)), cancel);
                     cancel.ThrowIfCancellationRequested();
             string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{this.ScriptPrefix}_{Random.Shared.Next(100000, 1000000)}.7z");
