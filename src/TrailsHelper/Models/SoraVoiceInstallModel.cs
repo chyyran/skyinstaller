@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
 using Amazon.S3;
 using Amazon.Runtime;
+using Amazon;
 
 namespace TrailsHelper.Models
 {
@@ -76,13 +77,29 @@ namespace TrailsHelper.Models
 
             try
             {
-                var client = new AmazonS3Client(new BasicAWSCredentials(manifest.S3.AccessKey, manifest.S3.SecretKey), Amazon.RegionEndpoint.GetBySystemName(manifest.S3.Region));
+                AWSConfigsS3.UseSignatureVersion4 = true;
+
+                AmazonS3Config config = !string.IsNullOrWhiteSpace(manifest.S3.Endpoint) 
+                ? new ()
+                {
+                    // serviceurl takes precedence over RegionEndpoint
+                    ServiceURL = manifest.S3.Endpoint,
+                }
+                : new()
+                {
+                    // Default to us-east-1
+                    RegionEndpoint = RegionEndpoint.GetBySystemName(manifest.S3.Region ?? "us-east-1")
+                };
+
+                var client = new AmazonS3Client(new BasicAWSCredentials(manifest.S3.AccessKey, manifest.S3.SecretKey), config);
+
                 return new(client.GetPreSignedURL(new()
                 {
                     BucketName = manifest.S3.Bucket,
                     Key = $"{s3.Host}{s3.AbsolutePath}",
                     Expires = DateTime.Now.AddHours(hours),
-                    Verb = HttpVerb.GET
+                    Verb = HttpVerb.GET,
+                    
                 }));
             } 
             catch

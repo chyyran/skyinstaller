@@ -40,6 +40,9 @@ namespace TrailsHelper.Support
         [JsonPropertyName("region")]
         public string Region { get; set; }
 
+        [JsonPropertyName("endpoint")]
+        public string Endpoint { get; set; }
+
         [JsonPropertyName("access")]
         public string AccessKey { get; set; }
 
