@@ -1,14 +1,41 @@
 id: dev.chyyran.skyinstaller
 runtime: org.freedesktop.Platform
 sdk: org.freedesktop.Sdk
-runtime-version: '22.08beta'
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.dotnet6
+runtime-version: '21.08'
 command: skyinstaller
 rename-icon: SkyInstaller
 rename-desktop-file: skyinstaller.desktop
-finish-args:      
-  - --socket=x11
+finish-args:
   - --share=ipc
+  - --socket=x11
+  # Networking to download mod files
   - --share=network
-  - --filesystem=~/.local/share/Steam:ro
+  # Needs access to regular Steam library paths
   - --filesystem=home
-  - --filesystem=host
+  - --filesystem=/media
+  - --filesystem=/mnt
+  - --filesystem=/run/media
+  # Need access specifically for Steam to do localconfig.vdf edits
+  - --filesystem=~/.local/share/Steam
+modules:
+  - name: skyinstaller
+    buildsystem: simple
+    sources:
+      - type: git
+        url: https://github.com/chyyran/skyinstaller.git
+        tag: 1.4.0
+      - sources.json
+      - type: script
+        dest-filename: run.sh
+        commands:
+          - /app/bin/dotnet /app/bin/skyinstaller.dll "$@"
+    build-commands:
+      - /usr/lib/sdk/dotnet6/bin/install.sh
+      - /usr/lib/sdk/dotnet6/bin/dotnet publish --source ./nuget-sources -c Release
+      - cp -r --remove-destination /run/build/skyinstaller/TrailsHelper/bin/Release/net6.0/publish/* /app/bin/
+      - install -Dm755 run.sh /app/bin/run.sh
+      - install -Dm644 flathub/skyinstaller.appdata.xml /app/share/metainfo/dev.chyyran.skyinstaller.appdata.xml
+      - install -Dm644 flathub/skyinstaller.png /app/share/icons/hicolor/256x256/apps/dev.chyyran.skyinstaller.png
+        install -Dm644 flathub/skyinstaller.desktop /app/share/applications/dev.chyyran.skyinstaller.desktop
