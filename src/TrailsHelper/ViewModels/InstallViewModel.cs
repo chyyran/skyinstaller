@@ -216,7 +216,7 @@ namespace TrailsHelper.ViewModels
             }
 
             this.IsInProgress = true;
-            using var client = new SoraVoiceInstallModel(this.GameModel.Prefix, this.GamePath, this.GameModel.BattleVoiceFile);
+            using var client = new SoraVoiceInstallModel(this.GameModel.Prefix, this.GamePath, this.GameModel.BattleVoiceFile, this.GameModel.Game.Locator.AppId.Value);
             client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
             try
             {

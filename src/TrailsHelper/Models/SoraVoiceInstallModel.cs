@@ -48,8 +48,9 @@ namespace TrailsHelper.Models
             }.ToSettings()); ;
         }, false);
 
-        public SoraVoiceInstallModel(string modPrefix, string gamePath, string battleVoiceFile)
+        public SoraVoiceInstallModel(string modPrefix, string gamePath, string battleVoiceFile, uint gameId)
         {
+            this.GameSteamId = gameId;
             this.ScriptPrefix = modPrefix;
             this.BattleVoiceFile = battleVoiceFile;
             this.GamePath = gamePath;
@@ -61,6 +62,7 @@ namespace TrailsHelper.Models
             this.HttpClient = new HttpClient(ph);
         }
 
+        public uint GameSteamId { get; }
         public string ScriptPrefix { get; }
         public string BattleVoiceFile { get; }
         public string GamePath { get; }
@@ -397,7 +399,7 @@ namespace TrailsHelper.Models
         {
             await using (var steamScope = SteamKillScope.WithoutSteamRunning())
             {
-
+                // todo: write WINEDLLOVERRIDES="dinput8=n,b" %command% to localconfig.vdf for game
             }
 
             return true;
