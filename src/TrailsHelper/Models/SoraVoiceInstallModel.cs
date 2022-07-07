@@ -393,6 +393,16 @@ namespace TrailsHelper.Models
             }, cancel);
         }
 
+        public async Task<bool> WriteSteamArgsOnLinux()
+        {
+            await using (var steamScope = SteamKillScope.WithoutSteamRunning())
+            {
+
+            }
+
+            return true;
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
