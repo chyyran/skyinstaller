@@ -1,0 +1,14 @@
+id: dev.chyyran.skyinstaller
+runtime: org.freedesktop.Platform
+sdk: org.freedesktop.Sdk
+runtime-version: '22.08beta'
+command: skyinstaller
+rename-icon: SkyInstaller
+rename-desktop-file: skyinstaller.desktop
+finish-args:      
+  - --socket=x11
+  - --share=ipc
+  - --share=network
+  - --filesystem=~/.local/share/Steam:ro
+  - --filesystem=home
+  - --filesystem=host

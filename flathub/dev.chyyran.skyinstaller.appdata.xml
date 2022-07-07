@@ -25,7 +25,7 @@
 			<image type="source">https://user-images.githubusercontent.com/1000503/174936993-612bc03a-1b80-42db-b233-2cd81fd689df.png</image>
 		</screenshot>
 	</screenshots>
-	<launchable type="desktop-id">skyinstaller.desktop</launchable>
+	<launchable type="desktop-id">dev.chyyran.skyinstaller.desktop</launchable>
 	<releases>
 	</releases>
 	<content_rating type="oars-1.1" />
