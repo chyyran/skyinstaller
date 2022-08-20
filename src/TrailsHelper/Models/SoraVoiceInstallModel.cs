@@ -39,7 +39,7 @@ namespace TrailsHelper.Models
         {
             return new ClientEngine(new EngineSettingsBuilder()
             {
-                CacheDirectory = Path.Combine(Environment.CurrentDirectory, $"skyinst_cache"),
+                CacheDirectory = Path.Combine(Path.GetTempPath(), $"skyinst_cache"),
                 StaleRequestTimeout = TimeSpan.FromSeconds(120),
                 WebSeedConnectionTimeout = TimeSpan.FromSeconds(90),
                 // always use webseeds to support IA torrents
@@ -246,7 +246,7 @@ namespace TrailsHelper.Models
         {
             var key = manifest.Voice.Asset.FormatTemplateString(this);
             string megakey = manifest.Voice.Mega[key];
-            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{key}_{Random.Shared.Next(100000, 1000000)}.7z");
+            string filename = Path.Combine(Path.GetTempPath(), $"skyinst_voices_{key}_{Random.Shared.Next(100000, 1000000)}.7z");
             var megaClient = new MegaApiClient(new Options(manifest.Voice.MegaApiKey));
             var megaUri = new Uri($"https://mega.nz/file/{megakey}");
             await megaClient.LoginAnonymousAsync();
@@ -285,7 +285,7 @@ namespace TrailsHelper.Models
 
             var torrent = await TorrentClient.Value.AddAsync(
                 torrentInfo, 
-                Path.Combine(Environment.CurrentDirectory, $"skyinst_{this.ScriptPrefix}"),
+                Path.Combine(Path.GetTempPath(), $"skyinst_{this.ScriptPrefix}"),
                 new TorrentSettingsBuilder()
                 {
                     CreateContainingDirectory = false,
