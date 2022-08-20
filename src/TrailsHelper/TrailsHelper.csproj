@@ -10,11 +10,12 @@
     <ApplicationIcon>Assets/fc_config.ico</ApplicationIcon>
     <Version>1.3.1</Version>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
@@ -25,7 +26,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishZip'">
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
     <PublishSingleFile>true</PublishSingleFile>
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
@@ -35,7 +36,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishAot'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishTrimmed>true</PublishTrimmed>
+    <PublishTrimmed>false</PublishTrimmed>
     <Optimize>true</Optimize>
     <PublishAot>true</PublishAot>
     <DebugSymbols>false</DebugSymbols>
