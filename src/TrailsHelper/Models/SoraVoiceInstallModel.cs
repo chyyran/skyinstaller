@@ -226,7 +226,7 @@ namespace TrailsHelper.Models
             var stream = await this.TryBestDownloadHttp(manifest, manifest.Voice.DirectUris
                .Select(uri => uri.FormatTemplateString(this)), cancel);
                     cancel.ThrowIfCancellationRequested();
-            string filename = Path.Combine(Environment.CurrentDirectory, $"skyinst_voices_{this.ScriptPrefix}_{Random.Shared.Next(100000, 1000000)}.7z");
+            string filename = Path.Combine(Path.GetTempPath(), $"skyinst_voices_{this.ScriptPrefix}_{Random.Shared.Next(100000, 1000000)}.7z");
 
             var outStream = File.Open(filename, new FileStreamOptions()
             {

@@ -154,8 +154,4 @@
     <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
     <PackageReference Include="Material.Avalonia" Version="3.0.0-rc0.99-nightly" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <RestoreSources>$(RestoreSources);../packages;https://api.nuget.org/v3/index.json</RestoreSources>
-  </PropertyGroup>
 </Project>
