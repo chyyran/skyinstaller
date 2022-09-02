@@ -1,9 +1,6 @@
 using System;
-using Avalonia.Controls;
-using Avalonia.Threading;
 using ReactiveUI;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using TrailsHelper.ViewModels;
 
 namespace TrailsHelper.Views
