@@ -1,8 +1,6 @@
 ﻿using Octokit;
 using System;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Handlers;
 using System.Threading.Tasks;
@@ -11,15 +9,14 @@ using SharpCompress.Readers;
 using MonoTorrent;
 using MonoTorrent.Client;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using TrailsHelper.Support;
 using System.Threading;
 using CG.Web.MegaApiClient;
 using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
 using Amazon.S3;
 using Amazon.Runtime;
 using Amazon;
+using System.Linq;
 
 namespace TrailsHelper.Models
 {
