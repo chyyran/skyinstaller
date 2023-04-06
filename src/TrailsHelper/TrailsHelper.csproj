@@ -13,35 +13,35 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
-    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    <PublishTrimmed>true</PublishTrimmed>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
+    <StripSymbols>true</StripSymbols>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishZip'">
-    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
-    <PublishTrimmed>false</PublishTrimmed>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
+    <StripSymbols>true</StripSymbols>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishAot'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishTrimmed>false</PublishTrimmed>
     <Optimize>true</Optimize>
     <PublishAot>true</PublishAot>
     <DebugSymbols>false</DebugSymbols>
+    <StripSymbols>true</StripSymbols>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 
-    <TrimmerDefaultAction>link</TrimmerDefaultAction>
+    <TrimMode>partial</TrimMode>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
     <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
