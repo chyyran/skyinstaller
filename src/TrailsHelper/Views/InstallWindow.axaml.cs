@@ -51,10 +51,5 @@ namespace TrailsHelper.Views
                 this.ViewModel!.InstallCancel.Cancel();
             }
         }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
     }
 }

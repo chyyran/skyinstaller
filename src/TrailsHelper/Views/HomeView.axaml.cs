@@ -10,10 +10,5 @@ namespace TrailsHelper.Views
         {
             InitializeComponent();
         }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
     }
 }

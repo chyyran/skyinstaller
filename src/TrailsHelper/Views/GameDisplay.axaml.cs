@@ -74,9 +74,8 @@ namespace TrailsHelper.Views
                     }
                 });
 
-                if (dialogResult.Count == 1 && dialogResult.Single().TryGetUri(out Uri? fileUri)
-                    && fileUri is not null
-                    && new FileInfo(fileUri.LocalPath).Directory is DirectoryInfo directory && directory.Exists)
+                if (dialogResult.Count == 1 && dialogResult.Single().TryGetLocalPath() is string fileUri
+                    && new FileInfo(fileUri).Directory is DirectoryInfo directory && directory.Exists)
                 {
                     interaction.SetOutput(directory);
                 }
@@ -90,10 +89,6 @@ namespace TrailsHelper.Views
                 return;
             }
             interaction.SetOutput(null);
-        }
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
     }
 }

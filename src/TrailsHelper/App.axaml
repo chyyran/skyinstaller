@@ -6,7 +6,7 @@
         <local:ViewLocator/>
     </Application.DataTemplates>
     <Application.Styles>
-      <!--<themes:MaterialTheme BaseTheme="Dark" PrimaryColor="Purple" SecondaryColor="Lime" />-->
-      <FluentTheme Mode="Dark"/>
+      <FluentTheme/>
     </Application.Styles>
+  <Application.RequestedThemeVariant>Dark</Application.RequestedThemeVariant>
 </Application>
