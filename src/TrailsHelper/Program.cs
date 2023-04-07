@@ -25,6 +25,7 @@ namespace TrailsHelper
 
             BuildAvaloniaApp()
             .StartWithClassicDesktopLifetime(args);
+            Steamworks.SteamClient.Shutdown();
         }
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()

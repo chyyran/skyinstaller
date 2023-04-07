@@ -14,7 +14,7 @@ namespace TrailsHelper.Support
             this.ReinitializeApi = reinit;
         }
 
-        public static SteamKillScope WithoutSteamRunning(bool reinitApi = true) {
+        public static SteamKillScope WithoutSteamRunning(bool reinitApi = false) {
             foreach (var proc in Process.GetProcessesByName("steam"))
             {
                 proc.Kill();

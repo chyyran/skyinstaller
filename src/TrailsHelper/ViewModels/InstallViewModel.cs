@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -48,6 +49,7 @@ namespace TrailsHelper.ViewModels
         public CancellationTokenSource InstallCancel { get; private set; } = new();
 
         public string GamePath { get; }
+        public bool IsSteam { get; }
 
         private static async Task<Stream?> DoDownloadFromDirect(InstallViewModel @this, SoraVoiceInstallModel client, DownloadManifest manifest, CancellationToken cancel)
         {
@@ -195,6 +197,11 @@ namespace TrailsHelper.ViewModels
                 this.Status = "Extracting voice data...";
                 await client.ExtractToVoiceFolder(voiceArchive, cancel);
 
+                if (this.IsSteam && Steam.IsSteamOS)
+                {
+                    this.Status = "Setting Proton Launch Arguments...";
+                    await client.WriteSteamArgsOnLinux();
+                }
 
                 await voiceArchive.DisposeAsync();
                 await scriptArchive.DisposeAsync();
@@ -263,10 +270,11 @@ namespace TrailsHelper.ViewModels
             }
         }
 
-        public InstallViewModel(GameDisplayViewModel gameModel, string gamePath)
+        public InstallViewModel(GameDisplayViewModel gameModel, string gamePath, bool isSteam)
         {
             this.GameModel = gameModel;
             this.GamePath = gamePath;
+            this.IsSteam = isSteam;
 
             this.WindowTitle = $"SkyInstaller — {this.GameModel.Title}";
 

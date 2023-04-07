@@ -17,6 +17,9 @@ using Amazon.S3;
 using Amazon.Runtime;
 using Amazon;
 using System.Linq;
+using System.Diagnostics;
+using Gameloop.Vdf;
+using Gameloop.Vdf.Linq;
 
 namespace TrailsHelper.Models
 {
@@ -394,12 +397,33 @@ namespace TrailsHelper.Models
 
         public async Task<bool> WriteSteamArgsOnLinux()
         {
-            await using (var steamScope = SteamKillScope.WithoutSteamRunning())
-            {
-                // todo: write WINEDLLOVERRIDES="dinput8=n,b" %command% to localconfig.vdf for game
-            }
+            if (Steam.GetSteamDir() is not string steamDir)
+                return false;
 
-            return true;
+            var localConfigPath = Path.Combine(steamDir, "userdata", Steamworks.SteamClient.SteamId.AccountId.ToString(), "config", "localconfig.vdf");
+           
+            try
+            {
+                await using (var steamScope = SteamKillScope.WithoutSteamRunning())
+                {
+                    string localconfig = await File.ReadAllTextAsync(localConfigPath);
+
+                    var value = VdfConvert.Deserialize(localconfig);
+                    // On Steam Deck, the keys are titlecased. On Windows (or perhaps legacy), the keys are lowercase, but we only need to do this for Linux anyways.
+                    Console.WriteLine(value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()]);
+                    var appOptions = (VObject)value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()];
+                    appOptions["LaunchOptions"] = new VValue("WINEDLLOVERRIDES=\"dinput8=n,b\" %command%");
+
+                    string serialized = VdfConvert.Serialize(value);
+                    await File.WriteAllTextAsync(localConfigPath, serialized);
+                }
+                return true;
+            } 
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         protected virtual void Dispose(bool disposing)

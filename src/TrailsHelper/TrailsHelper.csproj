@@ -64,7 +64,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
-    <Content Include="libsteam_api.so">
+    <Content Include="libsteam_api64.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
@@ -93,6 +93,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview6" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.103.44" />
+    <PackageReference Include="Gameloop.Vdf" Version="0.6.2" />
     <PackageReference Include="MegaApiClient" Version="1.10.3" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.3.1-prev6" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0-preview1" />

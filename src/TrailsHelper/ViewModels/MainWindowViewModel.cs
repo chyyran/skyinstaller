@@ -5,6 +5,7 @@ using Avalonia.Threading;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;

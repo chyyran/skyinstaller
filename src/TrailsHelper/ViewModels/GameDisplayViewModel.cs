@@ -48,7 +48,7 @@ namespace TrailsHelper.ViewModels
 
             this.InstallForSteamGameCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                var install = new InstallViewModel(this, this.SteamPath);
+                var install = new InstallViewModel(this, this.SteamPath, true);
                 var installResult = await ShowInstallDialog.Handle(install);
                 return this;
             });
@@ -60,7 +60,7 @@ namespace TrailsHelper.ViewModels
                     return this;
                 }
 
-                var install = new InstallViewModel(this, browseResult.FullName);
+                var install = new InstallViewModel(this, browseResult.FullName, false);
                 var installResult = await ShowInstallDialog.Handle(install);
                 return this;
             });
