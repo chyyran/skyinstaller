@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=SkyInstaller
 Comment=Japanese voice mod installer for the Trails in the Sky trilogy
-Exec=skyinstaller
+Exec=run.sh
 Type=Application
 Icon=dev.chyyran.SkyInstaller
 Categories=Utility;Game;
