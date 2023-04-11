@@ -23,6 +23,7 @@ finish-args:
   # Networking to download mod files
   - --share=network
   # Need access to Steam folders to do localconfig.vdf edits
+  - --filesystem=/usr/bin/steam
   - --filesystem=~/.local/share/Steam
   - --filesystem=~/.var/app/com.valvesoftware.Steam
   - --filesystem=xdg-data/Steam
