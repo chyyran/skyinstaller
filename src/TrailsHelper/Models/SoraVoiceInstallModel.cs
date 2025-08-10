@@ -407,14 +407,24 @@ namespace TrailsHelper.Models
                 await using (var steamScope = SteamKillScope.WithoutSteamRunning())
                 {
                     string localconfig = await File.ReadAllTextAsync(localConfigPath);
+                    long fileSize = new FileInfo(localConfigPath).Length;
+                    int maxTokenSize = (int)fileSize / 5; // arbitrary maybe need to use some better heuristics
+                    VdfSerializerSettings vdfSerializerSettings = new VdfSerializerSettings
+                    {
+                        MaximumTokenSize = maxTokenSize,
+                        UsesEscapeSequences = true,
+                        IsLinux = true,
+                        IsWindows = false,
+                        IsWin32 = false
+                    };
 
-                    var value = VdfConvert.Deserialize(localconfig);
+                    var value = VdfConvert.Deserialize(localconfig, vdfSerializerSettings);
                     // On Steam Deck, the keys are titlecased. On Windows (or perhaps legacy), the keys are lowercase, but we only need to do this for Linux anyways.
                     Console.WriteLine(value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()]);
                     var appOptions = (VObject)value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()];
                     appOptions["LaunchOptions"] = new VValue("WINEDLLOVERRIDES=\"dinput8=n,b\" %command%");
 
-                    string serialized = VdfConvert.Serialize(value);
+                    string serialized = VdfConvert.Serialize(value, vdfSerializerSettings);
                     await File.WriteAllTextAsync(localConfigPath, serialized);
                 }
                 return true;
