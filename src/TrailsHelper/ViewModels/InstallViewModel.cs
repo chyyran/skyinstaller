@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TrailsHelper.Models;
 using TrailsHelper.Support;
+using TrailsHelper.Support.WakeScope;
 
 namespace TrailsHelper.ViewModels
 {
@@ -224,6 +225,8 @@ namespace TrailsHelper.ViewModels
 
             this.IsInProgress = true;
             using var client = new SoraVoiceInstallModel(this.GameModel.Prefix, this.GamePath, this.GameModel.BattleVoiceFile, this.GameModel.Game.Locator.AppId.Value);
+            using var wakeScope = await WakeScope.PreventSleep();
+
             client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
             try
             {
