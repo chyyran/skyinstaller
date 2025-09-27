@@ -5,6 +5,7 @@
              xmlns:vm="using:TrailsHelper.ViewModels"
              xmlns:local="using:TrailsHelper.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="{x:Type vm:MainWindowViewModel}"
              x:Class="TrailsHelper.Views.HomeView">
 
   <Design.DataContext>
@@ -14,9 +15,9 @@
   <StackPanel VerticalAlignment="Center">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
       <WrapPanel HorizontalAlignment="Center">
-        <local:GameDisplay DataContext="{Binding ContextFC}"></local:GameDisplay>
-        <local:GameDisplay DataContext="{Binding ContextSC}"></local:GameDisplay>
-        <local:GameDisplay DataContext="{Binding Context3rd}"></local:GameDisplay>
+        <local:GameDisplay DataContext="{Binding ContextFC, x:DataType={x:Type vm:GameDisplayViewModel}}"></local:GameDisplay>
+        <local:GameDisplay DataContext="{Binding ContextSC, x:DataType={x:Type vm:GameDisplayViewModel}}"></local:GameDisplay>
+        <local:GameDisplay DataContext="{Binding Context3rd, x:DataType={x:Type vm:GameDisplayViewModel}}"></local:GameDisplay>
       </WrapPanel>
     </StackPanel>
   </StackPanel>

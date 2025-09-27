@@ -26,12 +26,12 @@ namespace TrailsHelper.ViewModels
         public Interaction<GameDisplayViewModel, DirectoryInfo?> BrowseInstallFolderDialog { get; }
 
         private string _installWindowIcon { get; }
-        public WindowIcon InstallWindowIcon => new(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
+        public WindowIcon InstallWindowIcon => new(AssetLoader.Open(new(_installWindowIcon)));
         public GameDisplayViewModel(Models.GameModel model, string installIcon)
         {
             _game = model;
             _installWindowIcon = installIcon;
-            var ico = new WindowIcon(AvaloniaLocator.Current.GetService<IAssetLoader>()?.Open(new(_installWindowIcon)));
+            var ico = new WindowIcon(AssetLoader.Open(new(_installWindowIcon)));
             _steamInstallButtonText = this.WhenAnyValue(x => x.IsInstalled, x => x.IsSteamReady)
                 .Select(value =>
                 {

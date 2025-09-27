@@ -16,7 +16,11 @@
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="PreferSystemChrome"
-        Title="{Binding WindowTitle}">
+        Title="{Binding WindowTitle}"
+        x:DataType="{x:Type vm:InstallViewModel}"
+        >
+  
+  
   <Grid ShowGridLines="True">
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
       <ExperimentalAcrylicBorder.Material>
@@ -47,11 +51,9 @@
       <Panel Grid.Column="0">
         <Panel.Background>
           <ImageBrush TileMode="None"
-                      BitmapInterpolationMode="HighQuality"
                       Stretch="UniformToFill"
                       Source="{Binding GameModel.CoverArt}"
-                      Opacity="0.2"
-                      />
+                      Opacity="0.2"/>
         </Panel.Background>
         <StackPanel Spacing="5" VerticalAlignment="Center">
           <Panel IsVisible="{Binding GameModel.IsLoaded}" Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">

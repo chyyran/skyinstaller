@@ -35,7 +35,6 @@ namespace TrailsHelper
                 .UseReactiveUI()
                 .With(new Win32PlatformOptions()
                 {
-                    UseWindowsUIComposition = true
                 });
     }
 }

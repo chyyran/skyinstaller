@@ -24,7 +24,7 @@ namespace TrailsHelper.Views
 
         }
 
-        private async Task DoShowInstallDialogAsync(InteractionContext<InstallViewModel, bool> interaction)
+        private async Task DoShowInstallDialogAsync(IInteractionContext<InstallViewModel, bool> interaction)
 {
             var dialog = new InstallWindow
             {
@@ -48,14 +48,14 @@ namespace TrailsHelper.Views
         }
 
 
-        private async Task DoBrowseForInstallFolderAsync(InteractionContext<GameDisplayViewModel, DirectoryInfo?> interaction)
+        private async Task DoBrowseForInstallFolderAsync(IInteractionContext<GameDisplayViewModel, DirectoryInfo?> interaction)
         {
 
             // todo: linux won't play nice with PresentationFramework..
 
             if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var mainIcon = desktop.MainWindow.Icon;
+                var mainIcon = desktop.MainWindow!.Icon;
                 desktop.MainWindow.Icon = interaction.Input.InstallWindowIcon;
 
                 var dialogResult = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new()
@@ -66,10 +66,7 @@ namespace TrailsHelper.Views
                     {
                         new(interaction.Input.Title)
                         {
-                            Patterns = new List<string>()
-                            {
-                                interaction.Input.Game.ExecutableName
-                            }
+                            Patterns = interaction.Input.Game.ExecutableNames
                         }
                     }
                 });

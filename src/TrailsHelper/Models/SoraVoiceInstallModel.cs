@@ -79,13 +79,13 @@ namespace TrailsHelper.Models
 
             try
             {
-                AWSConfigsS3.UseSignatureVersion4 = true;
 
                 AmazonS3Config config = !string.IsNullOrWhiteSpace(manifest.S3.Endpoint) 
                 ? new ()
                 {
                     // serviceurl takes precedence over RegionEndpoint
                     ServiceURL = manifest.S3.Endpoint,
+                   
                 }
                 : new()
                 {
@@ -409,7 +409,7 @@ namespace TrailsHelper.Models
                     string localconfig = await File.ReadAllTextAsync(localConfigPath);
                     long fileSize = new FileInfo(localConfigPath).Length;
                     int maxTokenSize = (int)fileSize / 5; // arbitrary maybe need to use some better heuristics
-                    VdfSerializerSettings vdfSerializerSettings = new VdfSerializerSettings
+                    VdfSerializerSettings vdfSerializerSettings = new()
                     {
                         MaximumTokenSize = maxTokenSize,
                         UsesEscapeSequences = true,

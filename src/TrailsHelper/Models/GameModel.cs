@@ -15,12 +15,12 @@ namespace TrailsHelper.Models
         public GameLocator Locator { get; }
 
         private static readonly HttpClient httpClient = new();
-        public GameModel(GameLocator locator, string scriptPrefix, string battleVoiceFname, string exeName)
+        public GameModel(GameLocator locator, string scriptPrefix, string battleVoiceFname, List<string> exeNames)
         {
             this.Locator = locator;
             this.ScriptPrefix = scriptPrefix;
             this.BattleVoiceFile = battleVoiceFname;
-            this.ExecutableName = exeName;
+            this.ExecutableNames = exeNames;
         }
 
         public async Task<Stream> LoadCoverBitmapAsync()
@@ -32,7 +32,7 @@ namespace TrailsHelper.Models
         public string Title => this.Locator.Name;
         public string ScriptPrefix { get; }
         public string BattleVoiceFile { get; }
-        public string ExecutableName { get; }
+        public List<string> ExecutableNames { get; }
 
         public void Clean(DirectoryInfo startPath)
         {

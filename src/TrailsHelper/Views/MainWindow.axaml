@@ -16,7 +16,9 @@
         ExtendClientAreaToDecorationsHint="True"
         ExtendClientAreaChromeHints="PreferSystemChrome"
         WindowStartupLocation="CenterScreen"
-        Title="SkyInstaller">
+        Title="SkyInstaller"
+        x:DataType="{x:Type vm:MainWindowViewModel}"
+        >
 
   <Design.DataContext>
     <vm:MainWindowViewModel/>
@@ -33,7 +35,7 @@
             MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
-    <local:HomeView DataContext="{Binding}"/>
+    <local:HomeView DataContext="{CompiledBinding, x:DataType={x:Type vm:MainWindowViewModel}}"/>
   </Grid>
 
 </Window>
