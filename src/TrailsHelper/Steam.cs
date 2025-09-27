@@ -44,10 +44,12 @@ namespace TrailsHelper
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e);
+                        Console.WriteLine(e);
                         Thread.Sleep(1);
                     }
                 }
+
+                Console.WriteLine("Steam Initialized");
 
                 steamId?.Dispose();
             });
@@ -57,11 +59,13 @@ namespace TrailsHelper
         {
             get
             {
-                // very bad way of checking for SteamOS but we can't use the Steam API at this point.
-                return RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                    && RuntimeInformation.OSDescription.Contains("valve")
-                    && RuntimeInformation.OSDescription.Contains("neptune");
-            }
+                // .NET 9 supports 'SteamOS' identifier
+                return RuntimeInformation.OSDescription == "SteamOS"
+                        // Legacy detection (very bad way of checking for SteamOS but we can't use the Steam API at this point)
+                        || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                            && RuntimeInformation.OSDescription.Contains("valve")
+                            && RuntimeInformation.OSDescription.Contains("neptune"));
+                    }
         }
 
         public static string? GetSteamExePath()
@@ -76,6 +80,9 @@ namespace TrailsHelper
             {
                 return "/usr/bin/steam";
             }
+
+            Console.WriteLine($"WARNING: Unknown OS {RuntimeInformation.OSDescription}");
+
             // if we're on a different platform, just force manual browsing.
             return null;
         }
@@ -105,6 +112,7 @@ namespace TrailsHelper
   
             if (steamPath == null || !File.Exists(steamPath)
                 || File.Exists(Path.Combine(Environment.CurrentDirectory, "nosteam.txt"))) {
+                Console.WriteLine($"Could not find Steam at {steamPath}");
                 return false;
             }
 
