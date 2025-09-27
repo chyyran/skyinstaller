@@ -14,10 +14,10 @@ namespace TrailsHelper.Support
         public static readonly GameLocator TRAILS_IN_THE_SKY_SC = new("Trails in the Sky SC", 251290);
         public static readonly GameLocator TRAILS_IN_THE_SKY_3RD = new("Trails in the Sky the 3rd", 436670);
 
-        private GameLocator(string name, uint appid)
+        private GameLocator(string name, uint appId)
         {
             this.Name = name;
-            this.AppId = new() { Value = appid };
+            this.AppId = new() { Value = appId };
         }
 
         public string Name { get; }
