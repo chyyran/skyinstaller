@@ -8,5 +8,12 @@
     <Application.Styles>
       <FluentTheme/>
     </Application.Styles>
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Material.Styles/Resources/Themes/ProgressBar.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
   <Application.RequestedThemeVariant>Dark</Application.RequestedThemeVariant>
 </Application>

@@ -24,7 +24,7 @@
     <Panel Width="200"  IsVisible="{Binding !IsLoaded}">
       <ProgressBar Classes="Circle" IsIndeterminate="True">
         <ProgressBar.Styles>
-          <StyleInclude Source="avares://Material.Styles/ProgressBar.xaml"></StyleInclude>
+          <StyleInclude Source="avares://Material.Styles/Resources/Compatibility/ProgressBarClasses.axaml"></StyleInclude>
         </ProgressBar.Styles>
       </ProgressBar>
     </Panel>

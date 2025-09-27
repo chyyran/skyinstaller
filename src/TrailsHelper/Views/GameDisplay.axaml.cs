@@ -24,7 +24,7 @@ namespace TrailsHelper.Views
 
         }
 
-        private async Task DoShowInstallDialogAsync(InteractionContext<InstallViewModel, bool> interaction)
+        private async Task DoShowInstallDialogAsync(IInteractionContext<InstallViewModel, bool> interaction)
 {
             var dialog = new InstallWindow
             {
@@ -48,7 +48,7 @@ namespace TrailsHelper.Views
         }
 
 
-        private async Task DoBrowseForInstallFolderAsync(InteractionContext<GameDisplayViewModel, DirectoryInfo?> interaction)
+        private async Task DoBrowseForInstallFolderAsync(IInteractionContext<GameDisplayViewModel, DirectoryInfo?> interaction)
         {
 
             // todo: linux won't play nice with PresentationFramework..

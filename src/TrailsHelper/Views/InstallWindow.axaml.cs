@@ -29,18 +29,18 @@ namespace TrailsHelper.Views
             }
             e.Cancel = true;
 
-            var result = await MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(new()
+            var result = await MsBox.Avalonia.MessageBoxManager.GetMessageBoxStandard(new()
             {
                 ContentTitle = "Cancel installation?", 
                 ContentMessage = "Are you sure you want to cancel the installation?",
-                ButtonDefinitions = MessageBox.Avalonia.Enums.ButtonEnum.YesNo,
+                ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.YesNo,
                 WindowIcon = this.Icon,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 SystemDecorations = SystemDecorations.BorderOnly
-            }).ShowDialog(this);
+            }).ShowWindowDialogAsync(this);
 
 
-            if (result != MessageBox.Avalonia.Enums.ButtonResult.Yes)
+            if (result != MsBox.Avalonia.Enums.ButtonResult.Yes)
             {
                 e.Cancel = true;
             }
