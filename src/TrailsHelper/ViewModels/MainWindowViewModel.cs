@@ -36,9 +36,9 @@ namespace TrailsHelper.ViewModels
                 .Subscribe(this.LoadSteamStatus!);
         }
 
-        public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A", "ed6_win_DX9.exe"), "avares://SkyInstaller/Assets/fc.ico");
-        public GameDisplayViewModel ContextSC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_SC, "sc", "ED6_DT37", "ed6_win2_DX9.exe"), "avares://SkyInstaller/Assets/sc.ico");
-        public GameDisplayViewModel Context3rd { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_3RD, "3rd", "ED6_DT37", "ed6_win3_DX9.exe"), "avares://SkyInstaller/Assets/3rd_config.ico");
+        public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A", ["ed6_win.exe", "ed6_win_DX9.exe"]), "avares://SkyInstaller/Assets/fc.ico");
+        public GameDisplayViewModel ContextSC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_SC, "sc", "ED6_DT37", ["ed6_win2.exe", "ed6_win2_DX9.exe"]), "avares://SkyInstaller/Assets/sc.ico");
+        public GameDisplayViewModel Context3rd { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_3RD, "3rd", "ED6_DT37", ["ed6_win3.exe", "ed6_win3_DX9.exe"]), "avares://SkyInstaller/Assets/3rd_config.ico");
 
         public async void ActivateSteam()
         {

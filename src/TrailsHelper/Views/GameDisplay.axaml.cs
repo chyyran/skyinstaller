@@ -55,7 +55,7 @@ namespace TrailsHelper.Views
 
             if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var mainIcon = desktop.MainWindow.Icon;
+                var mainIcon = desktop.MainWindow!.Icon;
                 desktop.MainWindow.Icon = interaction.Input.InstallWindowIcon;
 
                 var dialogResult = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new()
@@ -66,10 +66,7 @@ namespace TrailsHelper.Views
                     {
                         new(interaction.Input.Title)
                         {
-                            Patterns = new List<string>()
-                            {
-                                interaction.Input.Game.ExecutableName
-                            }
+                            Patterns = interaction.Input.Game.ExecutableNames
                         }
                     }
                 });
