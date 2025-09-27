@@ -4,14 +4,20 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
-    <TrimMode>link</TrimMode>
+    <TrimMode>full</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>SkyInstaller</AssemblyName>
     <ApplicationIcon>Assets/fc_config.ico</ApplicationIcon>
     <Version>1.5.0</Version>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-  <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ILLink.Descriptors.xml">
+      <LogicalName>ILLink.Descriptors.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
