@@ -112,6 +112,5 @@
     <PackageReference Include="SharpCompress" Version="0.40.0" />
     <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
     <PackageReference Include="Material.Avalonia" Version="3.13.1" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
   </ItemGroup>
 </Project>

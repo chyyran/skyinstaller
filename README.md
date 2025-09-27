@@ -42,6 +42,9 @@ Troubleshooting
 ### SkyInstaller does not start
 The single-file download should work on the majority of systems but sometimes an aggressive antivirus might delete a necessary DLL library. Try the [non self-extracting ZIP file](https://github.com/chyyran/skyinstaller/releases/latest/download/SkyInstaller.zip) and see if it might work. Windows 7 is not supported but may work.
 
+### SkyInstaller does not start on Linux
+SkyInstaller needs `fontconfig` and X11, ensure you have support for this on your distribution. SteamOS is the only Linux distribution that I can guarantee support on.
+
 ### SkyInstaller is stuck on 'Waiting for Steam'
 If Steam is installed, SkyInstaller needs the Steam API to find the installation location of the game. Ensure that Steam is running and that you are logged in to Steam. Alternatively, you can browse to the install location manually.
 
@@ -60,7 +63,7 @@ Sometimes the download may stall on a slow internet connection. Check your inter
 
 ### How do I uninstall the mod?
 SkyInstaller does not have a dedicated uninstaller for the Evolution voice mod. Manually delete `dinput8.dll` from the install folder to uninstall the mod.
-
+ 
 License
 -------
 SkyInstaller is licensed under the Mozilla Public License 2.0 (MPL2). 
