@@ -36,3 +36,8 @@ jobs:
       with:
         name: ${{ format('SkyInstaller-zip-win-x64-{0}', github.sha) }}
         path: src/TrailsHelper/out/SkyInstaller.zip
+    - name: Upload Release
+      uses: actions/upload-artifact@v4.4.0
+      with:
+        name: ${{ format('SkyInstaller-{0}', github.sha) }}
+        path: src/TrailsHelper/out/*
