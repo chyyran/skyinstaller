@@ -21,3 +21,18 @@ jobs:
     - name: Build via build script
       run: ./build.ps1
       working-directory: src/TrailsHelper
+    - name: Upload Windows Self-Contained
+      uses: actions/upload-artifact@v4.4.0
+      with:
+        name: ${{ format('SkyInstaller-win-x64-{0}', github.sha) }}
+        path: src/TrailsHelper/out/SkyInstaller.exe
+    - name: Upload Linux Self-Contained
+      uses: actions/upload-artifact@v4.4.0
+      with:
+        name: ${{ format('skyinstaller-linux-x64-{0}', github.sha) }}
+        path: src/TrailsHelper/out/skyinstaller-linux-x64
+    - name: Upload Windows Zip Archive
+      uses: actions/upload-artifact@v4.4.0
+      with:
+        name: ${{ format('SkyInstaller-zip-win-x64-{0}', github.sha) }}
+        path: src/TrailsHelper/out/SkyInstaller.zip
