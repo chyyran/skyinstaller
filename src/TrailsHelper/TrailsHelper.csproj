@@ -5,7 +5,6 @@
     <Nullable>enable</Nullable>
     <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
     <TrimMode>full</TrimMode>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>SkyInstaller</AssemblyName>
     <ApplicationIcon>Assets/fc_config.ico</ApplicationIcon>
     <Version>1.5.0</Version>
@@ -83,21 +82,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>Always</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <!--This helps with theme dll-s trimming.
-	If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
-	https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
-    <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
-    <TrimmableAssembly Include="Avalonia.Themes.Default" />
-    <TrimmableAssembly Include="Material.Avalonia" />
-    <TrimmableAssembly Include="Material.Colors" />
-    <TrimmableAssembly Include="Material.DataGrid" />
-    <TrimmableAssembly Include="Material.Dialog" />
-    <TrimmableAssembly Include="Material.Ripple" />
-
-    <TrimmableAssembly Include="MessageBox.Avalonia" />
   </ItemGroup>
   
   <ItemGroup>
