@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ using TrailsHelper.Models;
 
 namespace TrailsHelper.ViewModels
 {
-    public class GameDisplayViewModel : ViewModelBase
+    public partial class GameDisplayViewModel : ViewModelBase
     {
         GameModel _game;
         public GameModel Game => _game;
@@ -32,16 +33,6 @@ namespace TrailsHelper.ViewModels
             _game = model;
             _installWindowIcon = installIcon;
             var ico = new WindowIcon(AssetLoader.Open(new(_installWindowIcon)));
-            _steamInstallButtonText = this.WhenAnyValue(x => x.IsInstalled, x => x.IsSteamReady)
-                .Select(value =>
-                {
-                    var (installed, steamReady) = value;
-                    if (!steamReady)
-                        return "Waiting for Steam...";
-
-                    return installed ? "Install to Steam version" : "Game not installed";
-                })
-                .ToProperty(this, x => x.InstallButtonText);
 
             this.ShowInstallDialog = new();
             this.BrowseInstallFolderDialog = new();
@@ -66,30 +57,38 @@ namespace TrailsHelper.ViewModels
             });
         }
 
-        private Bitmap? _cover;
-        public Bitmap? CoverArt
-        {
-            get => _cover;
-            private set => this.RaiseAndSetIfChanged(ref _cover, value);
-        }
+        [ObservableProperty]
+        private Bitmap? _coverArt;
 
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(InstallButtonText))]
         private bool _isInstalled = false;
-        public bool IsInstalled { get => _isInstalled; set => this.RaiseAndSetIfChanged(ref _isInstalled, value); }
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(InstallButtonText))]
         private bool _isSteamReady = false;
-        public bool IsSteamReady { get => _isSteamReady; set => this.RaiseAndSetIfChanged(ref _isSteamReady, value); }
 
+        [ObservableProperty]
         private bool _isSteamDisabled = false;
-        public bool IsSteamDisabled { get => _isSteamDisabled; set => this.RaiseAndSetIfChanged(ref _isSteamDisabled, value); }
 
+        [ObservableProperty]
         private bool _isLoaded = false;
-        public bool IsLoaded { get => _isLoaded; set => this.RaiseAndSetIfChanged(ref _isLoaded, value); }
 
-        private string _path = "Game not found.";
-        public string SteamPath { get => _path; set => this.RaiseAndSetIfChanged(ref _path, value); }
+        [ObservableProperty]
+        private string _steamPath = "Game not found.";
 
-        readonly ObservableAsPropertyHelper<string> _steamInstallButtonText;
-        public string InstallButtonText => _steamInstallButtonText.Value;
+
+        public string InstallButtonText
+        {
+            get
+            {
+                if (!this.IsSteamReady)
+                    return "Waiting for Steam...";
+
+                return this.IsInstalled ? "Install to Steam version" : "Game not installed";
+            }
+        }
 
         public string Title => _game.Title;
 
@@ -107,7 +106,7 @@ namespace TrailsHelper.ViewModels
         public async Task LoadSteam()
         {
             this.IsInstalled = _game.Locator.IsInstalled();
-            if (this.IsInstalled) 
+            if (this.IsInstalled)
                 this.SteamPath = _game.Locator.GetInstallDirectory()!.FullName;
         }
     }

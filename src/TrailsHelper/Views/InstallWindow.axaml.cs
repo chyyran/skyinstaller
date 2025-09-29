@@ -47,7 +47,7 @@ namespace TrailsHelper.Views
             else
             {
                 e.Cancel = false;
-                this.ViewModel!.Status = "Cleaning up...";
+                this.ViewModel!.DownloadStatus = "Cleaning up...";
                 this.ViewModel!.InstallCancel.Cancel();
             }
         }
