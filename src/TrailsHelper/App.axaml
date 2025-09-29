@@ -2,15 +2,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:TrailsHelper"
              x:Class="TrailsHelper.App">
-    <Application.Styles>
-      <FluentTheme/>
-    </Application.Styles>
+  <Application.Styles>
+    <FluentTheme/>
+  </Application.Styles>
+
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://Material.Styles/Resources/Themes/ProgressBar.axaml"/>
+        <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
+
   <Application.RequestedThemeVariant>Dark</Application.RequestedThemeVariant>
 </Application>
