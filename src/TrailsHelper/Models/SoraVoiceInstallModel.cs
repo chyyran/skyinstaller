@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Handlers;
 using System.Threading.Tasks;
 using SharpCompress.Archives;
 using SharpCompress.Readers;
@@ -11,15 +10,14 @@ using MonoTorrent.Client;
 using System.Text.Json;
 using TrailsHelper.Support;
 using System.Threading;
-using CG.Web.MegaApiClient;
 using System.Collections.Generic;
 using Amazon.S3;
 using Amazon.Runtime;
 using Amazon;
 using System.Linq;
-using System.Diagnostics;
 using Gameloop.Vdf;
 using Gameloop.Vdf.Linq;
+using TrailsHelper.Support.HttpProgressHandler;
 
 namespace TrailsHelper.Models
 {
@@ -240,26 +238,6 @@ namespace TrailsHelper.Models
             outStream.Seek(0, SeekOrigin.Begin);
             return outStream;
 
-        }
-
-        public async Task<Stream> DownloadVoiceFromMega(DownloadManifest manifest, CancellationToken cancel = default)
-        {
-            var key = manifest.Voice.Asset.FormatTemplateString(this);
-            string megakey = manifest.Voice.Mega[key];
-            string filename = Path.Combine(Path.GetTempPath(), $"skyinst_voices_{key}_{Random.Shared.Next(100000, 1000000)}.7z");
-            var megaClient = new MegaApiClient(new Options(manifest.Voice.MegaApiKey));
-            var megaUri = new Uri($"https://mega.nz/file/{megakey}");
-            await megaClient.LoginAnonymousAsync();
-            var megaNode = await megaClient.GetNodeFromLinkAsync(megaUri);
-            await megaClient.DownloadFileAsync(megaNode, filename, new Progress<double>(
-                d => this.ProgressChangedEvent?.Invoke(this, d)), cancel);
-            return File.Open(filename, new FileStreamOptions()
-            {
-                Mode = System.IO.FileMode.Open,
-                Access = FileAccess.Read,
-                BufferSize = 8096,
-                Options = FileOptions.DeleteOnClose,
-            });
         }
 
         public async Task<TorrentManager> DownloadVoiceTorrentInfo(DownloadManifest manifest, CancellationToken cancel = default)

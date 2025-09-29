@@ -11,6 +11,7 @@
     <Version>1.5.0</Version>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -23,6 +24,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
     <StripSymbols>true</StripSymbols>
@@ -31,6 +33,7 @@
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
     <PublishTrimmed>true</PublishTrimmed>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <PublishReadyToRunComposite>false</PublishReadyToRunComposite>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishZip'">
@@ -44,19 +47,21 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishAot'">
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <Optimize>true</Optimize>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <PublishSingleFile>true</PublishSingleFile>
     <PublishAot>true</PublishAot>
+    <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
     <StripSymbols>true</StripSymbols>
-    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-
-    <TrimMode>partial</TrimMode>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
-    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
-    <IlcDisableUnhandledExceptionExperience>true</IlcDisableUnhandledExceptionExperience>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     
+    <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
+    <IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
+    <IlcDisableUnhandledExceptionExperience>false</IlcDisableUnhandledExceptionExperience>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
   
@@ -104,15 +109,13 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.6" />
     <PackageReference Include="AWSSDK.S3" Version="4.0.7.4" />
     <PackageReference Include="Gameloop.Vdf" Version="0.6.2" />
-    <PackageReference Include="MegaApiClient" Version="1.10.5" />
+    <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="MonoTorrent" Version="3.0.2" />
     <PackageReference Include="Octokit" Version="14.0.0" />
     <PackageReference Include="SharpCompress" Version="0.40.0" />
     <PackageReference Include="Facepunch.Steamworks" Version="2.3.3" />
-    <PackageReference Include="Material.Avalonia" Version="3.13.1" />
     <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.2" />
   </ItemGroup>
 </Project>

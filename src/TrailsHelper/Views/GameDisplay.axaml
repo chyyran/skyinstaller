@@ -5,7 +5,11 @@
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="300"
              xmlns:vm="using:TrailsHelper.ViewModels"
              x:Class="TrailsHelper.Views.GameDisplay"
-             x:DataType="{x:Type vm:GameDisplayViewModel}">
+             x:DataType="{x:Type vm:GameDisplayViewModel}"
+             xmlns:li="using:LoadingIndicators.Avalonia"
+             >
+
+
   <Grid>
     <StackPanel Spacing="5" Width="250" IsVisible="{Binding IsLoaded}" VerticalAlignment="Center">
       <Panel Width="200" Height="300" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -22,12 +26,10 @@
               IsEnabled="True"
         Command="{Binding BrowseThenInstallGameCommand}"/>
     </StackPanel>
-    <Panel Width="200"  IsVisible="{Binding !IsLoaded}">
-      <ProgressBar Classes="Circle" IsIndeterminate="True">
-        <ProgressBar.Styles>
-          <StyleInclude Source="avares://Material.Styles/Resources/Compatibility/ProgressBarClasses.axaml"></StyleInclude>
-        </ProgressBar.Styles>
-      </ProgressBar>
+    <Panel Width="200" Height="300" IsVisible="{Binding !IsLoaded}">
+      <Border Height="64" Width="64">
+        <li:LoadingIndicator Height="64" Width="64" IsActive="{Binding !IsLoaded}" Mode="Arc" SpeedRatio="3.0" Foreground="{StaticResource SystemAccentColor}" />
+      </Border>
     </Panel>
   </Grid>
 

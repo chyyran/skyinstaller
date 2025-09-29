@@ -32,9 +32,6 @@ namespace TrailsHelper
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .LogToTrace()
-                .UseReactiveUI()
-                .With(new Win32PlatformOptions()
-                {
-                });
+                .UseReactiveUI();
     }
 }
