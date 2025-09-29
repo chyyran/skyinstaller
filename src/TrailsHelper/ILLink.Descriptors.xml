@@ -2,7 +2,6 @@
 <linker>
   <assembly fullname="Facepunch.Steamworks.Win64" preserve="all" />
   <assembly fullname="Mono.Nat" preserve="all" />
-  <assembly fullname="Newtonsoft.Json" preserve="all" />
   <assembly fullname="Octokit" preserve="all" />
   <assembly fullname="ReactiveUI" preserve="all" />
   <assembly fullname="Gameloop.Vdf" preserve="all" />

@@ -1,13 +1,10 @@
-﻿using CG.Web.MegaApiClient;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using TrailsHelper.Models;
@@ -68,24 +65,6 @@ namespace TrailsHelper.ViewModels
             }
         }
 
-        private static async Task<Stream?> DoDownloadFromMega(InstallViewModel @this, SoraVoiceInstallModel client, DownloadManifest manifest, CancellationToken cancel)
-        {
-            try
-            {
-                @this.Status = "Downloading voice data...";
-                var voiceStream = await client.DownloadVoiceFromMega(manifest, cancel);
-                cancel.ThrowIfCancellationRequested();
-                return voiceStream;
-            }
-            // permissible failure situations
-            catch (Exception megaException) when (megaException is NotSupportedException || megaException is ApiException
-                || megaException is HttpRequestException
-                || (megaException is AggregateException a && a.InnerException is HttpRequestException))
-            {
-                return null;
-            }
-        }
-
         private static async Task<Stream?> DoDownloadFromTorrent(InstallViewModel @this, SoraVoiceInstallModel client, DownloadManifest manifest, CancellationToken cancel)
         {
             // torrent has no permissible failure situations.
@@ -119,7 +98,6 @@ namespace TrailsHelper.ViewModels
         private static readonly Dictionary<string, Func<InstallViewModel, SoraVoiceInstallModel, DownloadManifest, CancellationToken, Task<Stream?>>> VoiceDownloadStrategies = new()
         {
             { "direct", InstallViewModel.DoDownloadFromDirect },
-            { "mega", InstallViewModel.DoDownloadFromMega },
             { "torrent", InstallViewModel.DoDownloadFromTorrent },
         };
 

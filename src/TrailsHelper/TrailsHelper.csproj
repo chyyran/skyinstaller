@@ -13,7 +13,6 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Configurations>Debug;Release;PublishAot</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -110,10 +109,8 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.6" />
     <PackageReference Include="AWSSDK.S3" Version="4.0.7.4" />
     <PackageReference Include="Gameloop.Vdf" Version="0.6.2" />
-    <PackageReference Include="MegaApiClient" Version="1.10.5" />
     <PackageReference Include="MessageBox.Avalonia" Version="3.2.0" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="MonoTorrent" Version="3.0.2" />
     <PackageReference Include="Octokit" Version="14.0.0" />
     <PackageReference Include="SharpCompress" Version="0.40.0" />
