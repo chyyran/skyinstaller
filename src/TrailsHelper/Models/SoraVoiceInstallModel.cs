@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Handlers;
 using System.Threading.Tasks;
 using SharpCompress.Archives;
 using SharpCompress.Readers;
@@ -17,9 +16,9 @@ using Amazon.S3;
 using Amazon.Runtime;
 using Amazon;
 using System.Linq;
-using System.Diagnostics;
 using Gameloop.Vdf;
 using Gameloop.Vdf.Linq;
+using TrailsHelper.Support.HttpProgressHandler;
 
 namespace TrailsHelper.Models
 {
