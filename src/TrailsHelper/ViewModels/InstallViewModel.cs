@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,34 +14,24 @@ using TrailsHelper.Support.WakeScope;
 
 namespace TrailsHelper.ViewModels
 {
-    public class InstallViewModel : ViewModelBase
+    public partial class InstallViewModel : ViewModelBase
     {
         public ReactiveCommand<Unit, bool> InstallCommand { get; }
 
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ProgressPercentString))]
         private double _progressValue;
-        public double ProgressValue
-        {
-            get => _progressValue;
-            private set => this.RaiseAndSetIfChanged(ref _progressValue, value);
-        }
-
-        private bool _inProgress;
-        public bool IsInProgress
-        {
-            get => _inProgress;
-            private set => this.RaiseAndSetIfChanged(ref _inProgress, value);
-        }
 
 
+        [ObservableProperty]
+        private bool _isInProgress;
+
+        [ObservableProperty]
         private string? _downloadStatus;
-        public string? Status
-        {
-            get => _downloadStatus;
-            set => this.RaiseAndSetIfChanged(ref _downloadStatus, value);
-        }
 
-        readonly ObservableAsPropertyHelper<string> _progressPercentString;
-        public string ProgressPercentString => _progressPercentString.Value;
+        public string ProgressPercentString => $"{this.ProgressValue:F1}%";
+
 
         public string WindowTitle { get; }
 
@@ -54,7 +45,7 @@ namespace TrailsHelper.ViewModels
             try
             {
                 // try download from direct links first
-                @this.Status = "Downloading voice data...";
+                @this.DownloadStatus = "Downloading voice data...";
                 var voiceStream = await client.DownloadVoiceFromDirect(manifest, cancel);
                 cancel.ThrowIfCancellationRequested();
                 return voiceStream;
@@ -68,17 +59,17 @@ namespace TrailsHelper.ViewModels
         private static async Task<Stream?> DoDownloadFromTorrent(InstallViewModel @this, SoraVoiceInstallModel client, DownloadManifest manifest, CancellationToken cancel)
         {
             // torrent has no permissible failure situations.
-            @this.Status = "Downloading metadata...";
+            @this.DownloadStatus = "Downloading metadata...";
             var torrent = await client.DownloadVoiceTorrentInfo(manifest, cancel);
             cancel.ThrowIfCancellationRequested();
 
-            @this.Status = "Downloading voice data...";
+            @this.DownloadStatus = "Downloading voice data...";
 
             void voiceDataStatusHandler(object? _, long speed)
             {
                 if (!cancel.IsCancellationRequested)
                 {
-                    @this.Status = $"Downloading voice data ({speed / 1024} KB/s)...";
+                    @this.DownloadStatus = $"Downloading voice data ({speed / 1024} KB/s)...";
                 }
             }
 
@@ -149,36 +140,36 @@ namespace TrailsHelper.ViewModels
 
         private async Task<bool> DoInstall(SoraVoiceInstallModel client, CancellationToken cancel)
         {
-            this.Status = "Downloading manifest...";
+            this.DownloadStatus = "Downloading manifest...";
             var manifest = await client.DownloadManifest(cancel);
 
             try
             {
-                this.Status = "Downloading SoraVoiceLite...";
+                this.DownloadStatus = "Downloading SoraVoiceLite...";
                 using Stream modArchive = await client.DownloadLatestMod(manifest, cancel);
 
-                this.Status = "Extracting SoraVoiceLite...";
+                this.DownloadStatus = "Extracting SoraVoiceLite...";
                 await client.ExtractToGameRoot(modArchive!, cancel);
 
-                this.Status = "Downloading script files...";
+                this.DownloadStatus = "Downloading script files...";
                 using Stream scriptArchive = await client.DownloadLatestScripts(manifest, cancel);
 
-                this.Status = "Extracting scripts...";
+                this.DownloadStatus = "Extracting scripts...";
                 await client.ExtractToVoiceFolder(scriptArchive, cancel);
 
-                this.Status = "Downloading battle voices...";
+                this.DownloadStatus = "Downloading battle voices...";
                 await client.DownloadAndInstallBattleVoice(manifest, "dir", cancel);
 
                 await client.DownloadAndInstallBattleVoice(manifest, "dat", cancel);
 
                 using Stream voiceArchive = await DoVoiceDownload(client, manifest, cancel);
 
-                this.Status = "Extracting voice data...";
+                this.DownloadStatus = "Extracting voice data...";
                 await client.ExtractToVoiceFolder(voiceArchive, cancel);
 
                 if (this.IsSteam && Steam.IsSteamOS)
                 {
-                    this.Status = "Setting Proton Launch Arguments...";
+                    this.DownloadStatus = "Setting Proton Launch Arguments...";
                     await client.WriteSteamArgsOnLinux();
                 }
 
@@ -197,7 +188,7 @@ namespace TrailsHelper.ViewModels
         {
             if (!Directory.Exists(this.GamePath))
             {
-                this.Status = "Game directory not found";
+                this.DownloadStatus = "Game directory not found";
                 return false;
             }
 
@@ -209,38 +200,38 @@ namespace TrailsHelper.ViewModels
             try
             {
                 var result = await this.DoInstall(client, cancel);
-                this.Status = "Installation complete";
+                this.DownloadStatus = "Installation complete";
                 return result;
             }
             catch (Exception e) when (e is TaskCanceledException || e is OperationCanceledException
                 || (e is InvalidOperationException && e.Message == "Reader has been cancelled."))
             {
-                this.Status = "Installation cancelled";
+                this.DownloadStatus = "Installation cancelled";
                 this.DoCleanup();
                 return false;
             }
             // this is such a hack.
             catch (Exception e) when (e.Message == "Failed to download voice files.")
             {
-                this.Status = "Downloading voice files failed.";
+                this.DownloadStatus = "Downloading voice files failed.";
                 this.DoCleanup();
                 return false;
             }
             catch (Octokit.RateLimitExceededException)
             {
-                this.Status = "GitHub rate limit exceeded";
+                this.DownloadStatus = "GitHub rate limit exceeded";
                 this.DoCleanup();
                 return false;
             }
             catch (AggregateException e) when (e.InnerException != null)
             {
-                this.Status = $"Unknown error: {e.InnerException.GetType().Name}, {e.Message}";
+                this.DownloadStatus = $"Unknown error: {e.InnerException.GetType().Name}, {e.Message}";
                 this.DoCleanup();
                 return false;
             }
             catch (Exception e)
             {
-                this.Status = $"Unknown error: {e.GetType().Name}, {e.Message}";
+                this.DownloadStatus = $"Unknown error: {e.GetType().Name}, {e.Message}";
                 this.DoCleanup();
                 return false;
             }
@@ -258,10 +249,6 @@ namespace TrailsHelper.ViewModels
             this.IsSteam = isSteam;
 
             this.WindowTitle = $"SkyInstaller — {this.GameModel.Title}";
-
-            _progressPercentString = this.WhenAnyValue(x => x.ProgressValue)
-               .Select(x => $"{x:F1}%")
-               .ToProperty(this, x => x.ProgressPercentString);
 
             this.InstallCommand = ReactiveCommand.CreateFromTask(async () => {
                 var cancel = this.InstallCancel.Token;

@@ -1,39 +1,32 @@
-using Avalonia;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reactive;
+using System.ComponentModel;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using TrailsHelper.Models;
 using TrailsHelper.Support;
 
 namespace TrailsHelper.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    public partial class MainWindowViewModel : ViewModelBase
     {
+        [ObservableProperty]
         private bool _steamInitComplete = false;
-        public bool SteamInitComplete { get => _steamInitComplete; set => this.RaiseAndSetIfChanged(ref _steamInitComplete, value); }
 
+        [ObservableProperty]
         private bool _steamDisabled = false;
-        public bool SteamDisabled { get => _steamDisabled; set => this.RaiseAndSetIfChanged(ref _steamDisabled, value); }
 
         public MainWindowViewModel()
         {
+
             RxApp.MainThreadScheduler.Schedule(this.ActivateSteam);
             RxApp.MainThreadScheduler.Schedule(this.LoadCover);
-            this.WhenAnyValue(x => x.SteamInitComplete)
-                .Where(x => x)
+
+            Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
+                .Where(x => x.EventArgs.PropertyName == nameof(SteamInitComplete) && this.SteamInitComplete)
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(this.LoadSteamStatus!);
+                .Subscribe(x => this.LoadSteamStatus());
         }
 
         public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A", ["ed6_win.exe", "ed6_win_DX9.exe"]), "avares://SkyInstaller/Assets/fc.ico");
@@ -59,7 +52,7 @@ namespace TrailsHelper.ViewModels
             await this.Context3rd.LoadCover();
         }
 
-        private async void LoadSteamStatus(bool s)
+        private async void LoadSteamStatus()
         {
             this.ContextFC.IsSteamDisabled = this.SteamDisabled;
             this.ContextSC.IsSteamDisabled = this.SteamDisabled;
