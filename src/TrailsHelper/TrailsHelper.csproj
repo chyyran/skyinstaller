@@ -11,7 +11,9 @@
     <Version>1.5.0</Version>
     <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Configurations>Debug;Release;PublishAot</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Publish'">
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
     <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
     <StripSymbols>true</StripSymbols>
@@ -31,6 +34,7 @@
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
     <PublishTrimmed>true</PublishTrimmed>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <PublishReadyToRunComposite>false</PublishReadyToRunComposite>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishZip'">
@@ -44,19 +48,21 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'PublishAot'">
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <Optimize>true</Optimize>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <PublishSingleFile>true</PublishSingleFile>
     <PublishAot>true</PublishAot>
+    <Optimize>true</Optimize>
     <DebugSymbols>false</DebugSymbols>
     <StripSymbols>true</StripSymbols>
-    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-
-    <TrimMode>partial</TrimMode>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <InvariantGlobalization>true</InvariantGlobalization>
-    <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
-    <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
-    <IlcDisableUnhandledExceptionExperience>true</IlcDisableUnhandledExceptionExperience>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     
+    <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
+    <IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
+    <IlcDisableUnhandledExceptionExperience>false</IlcDisableUnhandledExceptionExperience>
     <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
   
