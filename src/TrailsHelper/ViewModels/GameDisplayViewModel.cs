@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,8 @@ namespace TrailsHelper.ViewModels
     {
         GameModel _game;
         public GameModel Game => _game;
-        public ReactiveCommand<Unit, GameDisplayViewModel> InstallForSteamGameCommand { get; }
-        public ReactiveCommand<Unit, GameDisplayViewModel> BrowseThenInstallGameCommand { get; }
+        public AsyncRelayCommand InstallForSteamGameCommand { get; }
+        public AsyncRelayCommand BrowseThenInstallGameCommand { get; }
 
         public Interaction<InstallViewModel, bool> ShowInstallDialog { get; }
         public Interaction<GameDisplayViewModel, DirectoryInfo?> BrowseInstallFolderDialog { get; }
@@ -37,23 +38,22 @@ namespace TrailsHelper.ViewModels
             this.ShowInstallDialog = new();
             this.BrowseInstallFolderDialog = new();
 
-            this.InstallForSteamGameCommand = ReactiveCommand.CreateFromTask(async () =>
+            this.InstallForSteamGameCommand = new AsyncRelayCommand(async () =>
             {
                 var install = new InstallViewModel(this, this.SteamPath, true);
                 var installResult = await ShowInstallDialog.Handle(install);
-                return this;
+                //return this;
             });
-            this.BrowseThenInstallGameCommand = ReactiveCommand.CreateFromTask(async () =>
+            this.BrowseThenInstallGameCommand = new AsyncRelayCommand(async () =>
             {
                 var browseResult = await BrowseInstallFolderDialog.Handle(this);
                 if (browseResult == null)
                 {
-                    return this;
+                    return;
                 }
 
                 var install = new InstallViewModel(this, browseResult.FullName, false);
                 var installResult = await ShowInstallDialog.Handle(install);
-                return this;
             });
         }
 
