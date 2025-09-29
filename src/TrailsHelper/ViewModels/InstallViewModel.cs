@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace TrailsHelper.ViewModels
 {
     public partial class InstallViewModel : ViewModelBase
     {
-        public ReactiveCommand<Unit, bool> InstallCommand { get; }
+        public AsyncRelayCommand InstallCommand { get; }
 
 
         [ObservableProperty]
@@ -250,10 +250,9 @@ namespace TrailsHelper.ViewModels
 
             this.WindowTitle = $"SkyInstaller — {this.GameModel.Title}";
 
-            this.InstallCommand = ReactiveCommand.CreateFromTask(async () => {
+            this.InstallCommand = new AsyncRelayCommand(async () => {
                 var cancel = this.InstallCancel.Token;
                 var value = await this.DoInstall(cancel);
-                return value;
              });
         }
 
