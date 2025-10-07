@@ -12,6 +12,8 @@ jobs:
       run:
         shell: pwsh
     runs-on: ubuntu-latest
+    outputs:
+      release-artifact-id: ${{ steps.upload-release-unsigned.outputs.artifact-id }}
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET 9.0
@@ -31,13 +33,35 @@ jobs:
       with:
         name: ${{ format('skyinstaller-linux-x64-{0}', github.sha) }}
         path: src/TrailsHelper/out/skyinstaller-linux-x64
-    - name: Upload Windows Zip Archive
+    - name: Upload Release
+      id: upload-release-unsigned
       uses: actions/upload-artifact@v4.4.0
       with:
-        name: ${{ format('SkyInstaller-zip-win-x64-{0}', github.sha) }}
-        path: src/TrailsHelper/out/SkyInstaller.zip
-    - name: Upload Release
+        name: ${{ format('SkyInstaller-unsigned-{0}', github.sha) }}
+        path: |
+          src/TrailsHelper/out/SkyInstaller.exe
+          src/TrailsHelper/out/skyinstaller-linux-x64
+  sign:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+    steps:
+    - id: sign-windows
+      name: Sign Windows Release
+      uses: signpath/github-action-submit-signing-request@v1
+      with:
+        api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+        organization-id: '${{ secrets.SIGNPATH_ORG_ID }}'
+        project-slug: 'skyinstaller'
+        signing-policy-slug: 'test-signing'
+        github-artifact-id: '${{ needs.build.outputs.release-artifact-id }}'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        wait-for-completion: true
+        output-artifact-directory: './signed'
+    - name: Upload Signed Release
+      id: upload-release
       uses: actions/upload-artifact@v4.4.0
       with:
         name: ${{ format('SkyInstaller-{0}', github.sha) }}
-        path: src/TrailsHelper/out/*
+        path: ./signed/*
+  

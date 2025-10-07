@@ -67,3 +67,7 @@ SkyInstaller does not have a dedicated uninstaller for the Evolution voice mod. 
 License
 -------
 SkyInstaller is licensed under the Mozilla Public License 2.0 (MPL2). 
+
+Code Signing
+------------
+SkyInstaller releases are signed with free code-signing services provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
