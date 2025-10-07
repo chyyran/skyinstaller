@@ -338,7 +338,7 @@ namespace TrailsHelper.Support.WakeScope.Native
                 return writer.CreateMessage();
             }
         }
-        public Task<(string SessionId, ObjectPath ObjectPath, string RuntimePath, System.Runtime.InteropServices.SafeHandle FifoFd, uint Uid, string SeatId, uint Vtnr, bool Existing)> CreateSessionAsync(uint uid, uint pid, string service, string @type, string @class, string desktop, string seatId, uint vtnr, string tty, string display, bool remote, string remoteUser, string remoteHost, (string, VariantValue)[] properties)
+        public Task<(string SessionId, ObjectPath ObjectPath, string RuntimePath, System.Runtime.InteropServices.SafeHandle? FifoFd, uint Uid, string SeatId, uint Vtnr, bool Existing)> CreateSessionAsync(uint uid, uint pid, string service, string @type, string @class, string desktop, string seatId, uint vtnr, string tty, string display, bool remote, string remoteUser, string remoteHost, (string, VariantValue)[] properties)
         {
             return Connection.CallMethodAsync(CreateMessage(), (m, s) => ReadMessage_soshusub(m, (login1Object)s!), this);
             MessageBuffer CreateMessage()
@@ -367,7 +367,7 @@ namespace TrailsHelper.Support.WakeScope.Native
                 return writer.CreateMessage();
             }
         }
-        public Task<(string SessionId, ObjectPath ObjectPath, string RuntimePath, System.Runtime.InteropServices.SafeHandle FifoFd, uint Uid, string SeatId, uint Vtnr, bool Existing)> CreateSessionWithPIDFDAsync(uint uid, System.Runtime.InteropServices.SafeHandle pidfd, string service, string @type, string @class, string desktop, string seatId, uint vtnr, string tty, string display, bool remote, string remoteUser, string remoteHost, ulong flags, (string, VariantValue)[] properties)
+        public Task<(string SessionId, ObjectPath ObjectPath, string RuntimePath, System.Runtime.InteropServices.SafeHandle? FifoFd, uint Uid, string SeatId, uint Vtnr, bool Existing)> CreateSessionWithPIDFDAsync(uint uid, System.Runtime.InteropServices.SafeHandle pidfd, string service, string @type, string @class, string desktop, string seatId, uint vtnr, string tty, string display, bool remote, string remoteUser, string remoteHost, ulong flags, (string, VariantValue)[] properties)
         {
             return Connection.CallMethodAsync(CreateMessage(), (m, s) => ReadMessage_soshusub(m, (login1Object)s!), this);
             MessageBuffer CreateMessage()
@@ -1024,7 +1024,7 @@ namespace TrailsHelper.Support.WakeScope.Native
                 return writer.CreateMessage();
             }
         }
-        public Task<System.Runtime.InteropServices.SafeHandle> InhibitAsync(string what, string who, string why, string mode)
+        public Task<System.Runtime.InteropServices.SafeHandle?> InhibitAsync(string what, string who, string why, string mode)
         {
             return Connection.CallMethodAsync(CreateMessage(), (m, s) => ReadMessage_h(m, (login1Object)s!), this);
             MessageBuffer CreateMessage()
@@ -2155,7 +2155,7 @@ namespace TrailsHelper.Support.WakeScope.Native
                 return writer.CreateMessage();
             }
         }
-        public Task<(System.Runtime.InteropServices.SafeHandle Fd, bool Inactive)> TakeDeviceAsync(uint major, uint minor)
+        public Task<(System.Runtime.InteropServices.SafeHandle? Fd, bool Inactive)> TakeDeviceAsync(uint major, uint minor)
         {
             return Connection.CallMethodAsync(CreateMessage(), (m, s) => ReadMessage_hb(m, (login1Object)s!), this);
             MessageBuffer CreateMessage()
@@ -2226,7 +2226,7 @@ namespace TrailsHelper.Support.WakeScope.Native
         }
         public ValueTask<IDisposable> WatchPauseDeviceAsync(Action<Exception?, (uint Major, uint Minor, string Type)> handler, bool emitOnCapturedContext = true, ObserverFlags flags = ObserverFlags.None)
             => WatchSignalAsync(Service.Destination, __Interface, Path, "PauseDevice", (m, s) => ReadMessage_uus(m, (login1Object)s!), handler, emitOnCapturedContext, flags);
-        public ValueTask<IDisposable> WatchResumeDeviceAsync(Action<Exception?, (uint Major, uint Minor, System.Runtime.InteropServices.SafeHandle Fd)> handler, bool emitOnCapturedContext = true, ObserverFlags flags = ObserverFlags.None)
+        public ValueTask<IDisposable> WatchResumeDeviceAsync(Action<Exception?, (uint Major, uint Minor, System.Runtime.InteropServices.SafeHandle? Fd)> handler, bool emitOnCapturedContext = true, ObserverFlags flags = ObserverFlags.None)
             => WatchSignalAsync(Service.Destination, __Interface, Path, "ResumeDevice", (m, s) => ReadMessage_uuh(m, (login1Object)s!), handler, emitOnCapturedContext, flags);
         public ValueTask<IDisposable> WatchLockAsync(Action<Exception?> handler, bool emitOnCapturedContext = true, ObserverFlags flags = ObserverFlags.None)
             => WatchSignalAsync(Service.Destination, __Interface, Path, "Lock", handler, emitOnCapturedContext, flags);
@@ -2826,7 +2826,7 @@ namespace TrailsHelper.Support.WakeScope.Native
             var reader = message.GetBodyReader();
             return ReadType_arssssuuz(ref reader);
         }
-        protected static (string, ObjectPath, string, System.Runtime.InteropServices.SafeHandle, uint, string, uint, bool) ReadMessage_soshusub(Message message, login1Object _)
+        protected static (string, ObjectPath, string, System.Runtime.InteropServices.SafeHandle?, uint, string, uint, bool) ReadMessage_soshusub(Message message, login1Object _)
         {
             var reader = message.GetBodyReader();
             var arg0 = reader.ReadString();
@@ -2849,7 +2849,7 @@ namespace TrailsHelper.Support.WakeScope.Native
             var reader = message.GetBodyReader();
             return reader.ReadBool();
         }
-        protected static System.Runtime.InteropServices.SafeHandle ReadMessage_h(Message message, login1Object _)
+        protected static System.Runtime.InteropServices.SafeHandle? ReadMessage_h(Message message, login1Object _)
         {
             var reader = message.GetBodyReader();
             return reader.ReadHandle<Microsoft.Win32.SafeHandles.SafeFileHandle>();
@@ -2923,7 +2923,7 @@ namespace TrailsHelper.Support.WakeScope.Native
             reader.ReadSignature("a(so)"u8);
             return ReadType_arsoz(ref reader);
         }
-        protected static (System.Runtime.InteropServices.SafeHandle, bool) ReadMessage_hb(Message message, login1Object _)
+        protected static (System.Runtime.InteropServices.SafeHandle?, bool) ReadMessage_hb(Message message, login1Object _)
         {
             var reader = message.GetBodyReader();
             var arg0 = reader.ReadHandle<Microsoft.Win32.SafeHandles.SafeFileHandle>();
@@ -2938,7 +2938,7 @@ namespace TrailsHelper.Support.WakeScope.Native
             var arg2 = reader.ReadString();
             return (arg0, arg1, arg2);
         }
-        protected static (uint, uint, System.Runtime.InteropServices.SafeHandle) ReadMessage_uuh(Message message, login1Object _)
+        protected static (uint, uint, System.Runtime.InteropServices.SafeHandle?) ReadMessage_uuh(Message message, login1Object _)
         {
             var reader = message.GetBodyReader();
             var arg0 = reader.ReadUInt32();

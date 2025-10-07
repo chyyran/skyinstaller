@@ -29,7 +29,7 @@ namespace TrailsHelper.Views
                 ContentTitle = "Cancel installation?",
                 ContentMessage = "Are you sure you want to cancel the installation?",
                 ButtonDefinitions = MsBox.Avalonia.Enums.ButtonEnum.YesNo,
-                WindowIcon = this.Icon,
+                WindowIcon = this.Icon!,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 SystemDecorations = SystemDecorations.BorderOnly
             }).ShowWindowDialogAsync(this);

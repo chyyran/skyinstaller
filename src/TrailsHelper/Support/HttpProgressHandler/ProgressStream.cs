@@ -28,7 +28,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
         private long _bytesSent;
         private long? _totalBytesToSend;
 
-        public ProgressStream(Stream innerStream, ProgressMessageHandler handler, HttpRequestMessage request, HttpResponseMessage response)
+        public ProgressStream(Stream innerStream, ProgressMessageHandler handler, HttpRequestMessage request, HttpResponseMessage? response)
             : base(innerStream)
         {
             Contract.Assert(handler != null);
@@ -70,7 +70,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
         }
 
 #if !NETSTANDARD1_3 // BeginX and EndX are not supported on Streams in netstandard1.3
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
             return InnerStream.BeginRead(buffer, offset, count, callback, state);
         }
@@ -102,7 +102,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
         }
 
 #if !NETSTANDARD1_3 // BeginX and EndX are not supported on Streams in netstandard1.3
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         {
             return new ProgressWriteAsyncResult(InnerStream, this, buffer, offset, count, callback, state);
         }
@@ -113,7 +113,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
         }
 #endif
 
-        internal void ReportBytesSent(int bytesSent, object userState)
+        internal void ReportBytesSent(int bytesSent, object? userState)
         {
             if (bytesSent > 0)
             {
@@ -129,7 +129,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
             }
         }
 
-        private void ReportBytesReceived(int bytesReceived, object userState)
+        private void ReportBytesReceived(int bytesReceived, object? userState)
         {
             if (bytesReceived > 0)
             {

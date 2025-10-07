@@ -398,9 +398,12 @@ namespace TrailsHelper.Models
 
                     var value = VdfConvert.Deserialize(localconfig, vdfSerializerSettings);
                     // On Steam Deck, the keys are titlecased. On Windows (or perhaps legacy), the keys are lowercase, but we only need to do this for Linux anyways.
-                    Console.WriteLine(value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()]);
-                    var appOptions = (VObject)value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()];
-                    appOptions["LaunchOptions"] = new VValue("WINEDLLOVERRIDES=\"dinput8=n,b\" %command%");
+                    //Console.WriteLine(value.Value["Software"]["Valve"]["Steam"]["apps"][this.GameSteamId.ToString()]);
+
+                    if (value.Value?["Software"]?["Valve"]?["Steam"]?["apps"]?[this.GameSteamId.ToString()] is VObject appOptions)
+                    {
+                        appOptions["LaunchOptions"] = new VValue("WINEDLLOVERRIDES=\"dinput8=n,b\" %command%");
+                    }
 
                     string serialized = VdfConvert.Serialize(value, vdfSerializerSettings);
                     await File.WriteAllTextAsync(localConfigPath, serialized);
