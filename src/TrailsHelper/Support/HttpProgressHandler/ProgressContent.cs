@@ -31,7 +31,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
             innerContent.Headers.CopyTo(Headers);
         }
 
-        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
         {
             ProgressStream progressStream = new ProgressStream(stream, _handler, _request, response: null);
             return _innerContent.CopyToAsync(progressStream);

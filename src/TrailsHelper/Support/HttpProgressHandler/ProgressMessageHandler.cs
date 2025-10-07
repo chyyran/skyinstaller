@@ -36,12 +36,12 @@ namespace TrailsHelper.Support.HttpProgressHandler
         /// <summary>
         /// Occurs every time the client sending data is making progress.
         /// </summary>
-        public event EventHandler<HttpProgressEventArgs> HttpSendProgress;
+        public event EventHandler<HttpProgressEventArgs>? HttpSendProgress;
 
         /// <summary>
         /// Occurs every time the client receiving data is making progress.
         /// </summary>
-        public event EventHandler<HttpProgressEventArgs> HttpReceiveProgress;
+        public event EventHandler<HttpProgressEventArgs>? HttpReceiveProgress;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -54,7 +54,8 @@ namespace TrailsHelper.Support.HttpProgressHandler
                 await AddResponseProgressAsync(request, response);
             }
 
-            return response;
+            // nullability: base.SendAsync is not null
+            return response!;
         }
 
         /// <summary>

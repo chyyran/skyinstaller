@@ -17,7 +17,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
         private readonly int _count;
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Exception is handled as part of IAsyncResult completion.")]
-        public ProgressWriteAsyncResult(Stream innerStream, ProgressStream progressStream, byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+        public ProgressWriteAsyncResult(Stream innerStream, ProgressStream progressStream, byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             : base(callback, state)
         {
             Contract.Assert(innerStream != null);
@@ -50,14 +50,15 @@ namespace TrailsHelper.Support.HttpProgressHandler
                 return;
             }
 
-            ProgressWriteAsyncResult thisPtr = (ProgressWriteAsyncResult)result.AsyncState;
-            try
-            {
-                thisPtr.WriteCompleted(result);
-            }
-            catch (Exception e)
-            {
-                thisPtr.Complete(false, e);
+            if (result.AsyncState is ProgressWriteAsyncResult thisPtr) {
+                try
+                {
+                    thisPtr.WriteCompleted(result);
+                }
+                catch (Exception e)
+                {
+                    thisPtr.Complete(false, e);
+                }
             }
         }
 

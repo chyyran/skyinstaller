@@ -11,22 +11,22 @@ namespace TrailsHelper.Support.HttpProgressHandler
     [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "_manualResetEvent is disposed in End<TAsyncResult>")]
     internal abstract class AsyncResult : IAsyncResult
     {
-        private AsyncCallback _callback;
-        private object _state;
+        private AsyncCallback? _callback;
+        private object? _state;
 
         private bool _isCompleted;
         private bool _completedSynchronously;
         private bool _endCalled;
 
-        private Exception _exception;
+        private Exception? _exception;
 
-        protected AsyncResult(AsyncCallback callback, object state)
+        protected AsyncResult(AsyncCallback? callback, object? state)
         {
             _callback = callback;
             _state = state;
         }
 
-        public object AsyncState
+        public object? AsyncState
         {
             get { return _state; }
         }
@@ -91,9 +91,8 @@ namespace TrailsHelper.Support.HttpProgressHandler
                 throw new ArgumentNullException("result");
             }
 
-            TAsyncResult thisPtr = result as TAsyncResult;
 
-            if (thisPtr == null)
+            if (result is not TAsyncResult thisPtr)
             {
 
                 throw new ArgumentException("The result was mismatched", "result");

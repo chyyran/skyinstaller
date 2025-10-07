@@ -15,7 +15,7 @@ namespace TrailsHelper.Support.HttpProgressHandler
         /// <param name="userToken">Any user state provided as part of reading or writing the data.</param>
         /// <param name="bytesTransferred">The current number of bytes either received or sent.</param>
         /// <param name="totalBytes">The total number of bytes expected to be received or sent.</param>
-        public HttpProgressEventArgs(int progressPercentage, object userToken, long bytesTransferred, long? totalBytes)
+        public HttpProgressEventArgs(int progressPercentage, object? userToken, long bytesTransferred, long? totalBytes)
             : base(progressPercentage, userToken)
         {
             BytesTransferred = bytesTransferred;
