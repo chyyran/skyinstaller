@@ -263,11 +263,16 @@ namespace TrailsHelper.ViewModels
                 var mainIcon = desktop.MainWindow!.Icon;
                 desktop.MainWindow.WindowState = WindowState.Minimized;
                 desktop.MainWindow.Icon = dialog.Icon;
+                desktop.MainWindow.IsEnabled = false;
+                desktop.MainWindow.ShowInTaskbar = false;
 
                 var result = await dialog.ShowDialog<bool>(desktop.MainWindow);
 
                 desktop.MainWindow.WindowState = WindowState.Normal;
+                desktop.MainWindow.IsEnabled = true;
+                desktop.MainWindow.ShowInTaskbar = true;
                 desktop.MainWindow.Icon = mainIcon;
+
                 return result;
             }
             return false;
