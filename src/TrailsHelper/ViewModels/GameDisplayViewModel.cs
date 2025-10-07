@@ -1,19 +1,17 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReactiveUI;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TrailsHelper.Models;
+using TrailsHelper.Views;
 
 namespace TrailsHelper.ViewModels
 {
@@ -24,36 +22,32 @@ namespace TrailsHelper.ViewModels
         public AsyncRelayCommand InstallForSteamGameCommand { get; }
         public AsyncRelayCommand BrowseThenInstallGameCommand { get; }
 
-        public Interaction<InstallViewModel, bool> ShowInstallDialog { get; }
-        public Interaction<GameDisplayViewModel, DirectoryInfo?> BrowseInstallFolderDialog { get; }
-
         private string _installWindowIcon { get; }
         public WindowIcon InstallWindowIcon => new(AssetLoader.Open(new(_installWindowIcon)));
+
         public GameDisplayViewModel(Models.GameModel model, string installIcon)
         {
             _game = model;
             _installWindowIcon = installIcon;
             var ico = new WindowIcon(AssetLoader.Open(new(_installWindowIcon)));
 
-            this.ShowInstallDialog = new();
-            this.BrowseInstallFolderDialog = new();
-
             this.InstallForSteamGameCommand = new AsyncRelayCommand(async () =>
             {
+
                 var install = new InstallViewModel(this, this.SteamPath, true);
-                var installResult = await ShowInstallDialog.Handle(install);
-                //return this;
+                var installResult = await install.ShowInstallDialog();
             });
+
             this.BrowseThenInstallGameCommand = new AsyncRelayCommand(async () =>
             {
-                var browseResult = await BrowseInstallFolderDialog.Handle(this);
+                var browseResult = await this.BrowseInstallFolder();
                 if (browseResult == null)
                 {
                     return;
                 }
 
                 var install = new InstallViewModel(this, browseResult.FullName, false);
-                var installResult = await ShowInstallDialog.Handle(install);
+                var installResult = await install.ShowInstallDialog();
             });
         }
 
@@ -103,11 +97,50 @@ namespace TrailsHelper.ViewModels
             this.IsLoaded = true;
         }
 
-        public async Task LoadSteam()
+        public void LoadSteam()
         {
             this.IsInstalled = _game.Locator.IsInstalled();
             if (this.IsInstalled)
                 this.SteamPath = _game.Locator.GetInstallDirectory()!.FullName;
+        }
+
+        public async Task<DirectoryInfo?> BrowseInstallFolder()
+        {
+
+            // todo: linux won't play nice with PresentationFramework..
+
+            if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var mainIcon = desktop.MainWindow!.Icon;
+                desktop.MainWindow.Icon = this.InstallWindowIcon;
+
+                var dialogResult = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(new()
+                {
+                    AllowMultiple = false,
+                    Title = $"Search for the installation of {this.Title}",
+                    FileTypeFilter = new List<FilePickerFileType>()
+                    {
+                        new(this.Title)
+                        {
+                            Patterns = this.Game.ExecutableNames
+                        }
+                    }
+                });
+
+                desktop.MainWindow.WindowState = WindowState.Normal;
+                desktop.MainWindow.Icon = mainIcon;
+
+                if (dialogResult.Count == 1 && dialogResult.Single().TryGetLocalPath() is string fileUri
+                    && new FileInfo(fileUri).Directory is DirectoryInfo directory && directory.Exists)
+                {
+                    return directory;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            return null;
         }
     }
 }

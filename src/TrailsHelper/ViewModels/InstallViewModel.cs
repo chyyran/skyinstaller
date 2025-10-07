@@ -1,16 +1,19 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ReactiveUI;
+using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TrailsHelper.Models;
 using TrailsHelper.Support;
 using TrailsHelper.Support.WakeScope;
+using TrailsHelper.Views;
 
 namespace TrailsHelper.ViewModels
 {
@@ -223,6 +226,12 @@ namespace TrailsHelper.ViewModels
                 this.DoCleanup();
                 return false;
             }
+            catch (ReaderCancelledException)
+            {
+                this.DownloadStatus = "Extraction canceled";
+                this.DoCleanup();
+                return false;
+            }
             catch (AggregateException e) when (e.InnerException != null)
             {
                 this.DownloadStatus = $"Unknown error: {e.InnerException.GetType().Name}, {e.Message}";
@@ -240,6 +249,28 @@ namespace TrailsHelper.ViewModels
                 this.IsInProgress = false;
                 this.InstallCancel = new();
             }
+        }
+
+        public async Task<bool> ShowInstallDialog()
+        {
+            var dialog = new InstallWindow
+            {
+                DataContext = this
+            };
+
+            if (Application.Current!.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var mainIcon = desktop.MainWindow!.Icon;
+                desktop.MainWindow.WindowState = WindowState.Minimized;
+                desktop.MainWindow.Icon = dialog.Icon;
+
+                var result = await dialog.ShowDialog<bool>(desktop.MainWindow);
+
+                desktop.MainWindow.WindowState = WindowState.Normal;
+                desktop.MainWindow.Icon = mainIcon;
+                return result;
+            }
+            return false;
         }
 
         public InstallViewModel(GameDisplayViewModel gameModel, string gamePath, bool isSteam)

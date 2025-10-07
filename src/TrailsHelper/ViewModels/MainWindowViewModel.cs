@@ -1,10 +1,5 @@
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reactive.Concurrency;
-using System.Reactive.Linq;
 using TrailsHelper.Support;
 
 namespace TrailsHelper.ViewModels
@@ -19,14 +14,16 @@ namespace TrailsHelper.ViewModels
 
         public MainWindowViewModel()
         {
+            Dispatcher.UIThread.Post(this.ActivateSteam);
+            Dispatcher.UIThread.Post(this.LoadCover);
 
-            RxApp.MainThreadScheduler.Schedule(this.ActivateSteam);
-            RxApp.MainThreadScheduler.Schedule(this.LoadCover);
-
-            Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => PropertyChanged += h, h => PropertyChanged -= h)
-                .Where(x => x.EventArgs.PropertyName == nameof(SteamInitComplete) && this.SteamInitComplete)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x => this.LoadSteamStatus());
+            this.PropertyChanged += (sender, e) =>
+            {
+                if (e.PropertyName == nameof(SteamInitComplete) && this.SteamInitComplete)
+                {
+                    Dispatcher.UIThread.Post(this.LoadSteamStatus);
+                }
+            };
         }
 
         public GameDisplayViewModel ContextFC { get; } = new(new(GameLocator.TRAILS_IN_THE_SKY_FC, "fc", "ED6_DT1A", ["ed6_win.exe", "ed6_win_DX9.exe"]), "avares://SkyInstaller/Assets/fc.ico");
@@ -52,7 +49,7 @@ namespace TrailsHelper.ViewModels
             await this.Context3rd.LoadCover();
         }
 
-        private async void LoadSteamStatus()
+        private void LoadSteamStatus()
         {
             this.ContextFC.IsSteamDisabled = this.SteamDisabled;
             this.ContextSC.IsSteamDisabled = this.SteamDisabled;
@@ -62,9 +59,9 @@ namespace TrailsHelper.ViewModels
             this.ContextSC.IsSteamReady = true;
             this.Context3rd.IsSteamReady = true;
 
-            await this.ContextFC.LoadSteam();
-            await this.ContextSC.LoadSteam();
-            await this.Context3rd.LoadSteam();
+            this.ContextFC.LoadSteam();
+            this.ContextSC.LoadSteam();
+            this.Context3rd.LoadSteam();
         }
     }
 }

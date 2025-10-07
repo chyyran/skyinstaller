@@ -1,24 +1,33 @@
 using System;
-using ReactiveUI;
-using System.Reactive.Linq;
+using System.ComponentModel;
+using Avalonia.Controls;
 using TrailsHelper.ViewModels;
 
 namespace TrailsHelper.Views
 {
-    public partial class MainWindow : Avalonia.ReactiveUI.ReactiveWindow<MainWindowViewModel>
+    public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            this.WhenActivated(d => d(this.ViewModel.WhenAnyValue(x => x!.SteamInitComplete)
-                .Where(x => x)
-                .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(this.OnSteamReady!)));
+
+            this.DataContextChanged += (sender, e) =>
+            {
+                if (DataContext is MainWindowViewModel viewModel)
+                {
+                    viewModel.PropertyChanged += ViewModel_PropertyChanged;
+                }
+            };
         }
 
-        public void OnSteamReady(bool s)
+        private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            this.Activate();
+            if (e.PropertyName == nameof(MainWindowViewModel.SteamInitComplete) &&
+                DataContext is MainWindowViewModel viewModel &&
+                viewModel.SteamInitComplete)
+            {
+                this.Activate();
+            }
         }
     }
 }
