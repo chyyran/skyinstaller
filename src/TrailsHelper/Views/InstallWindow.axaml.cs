@@ -1,24 +1,45 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
+using System;
+using TrailsHelper.Support;
 using TrailsHelper.ViewModels;
 
 
 namespace TrailsHelper.Views
 {
-    public partial class InstallWindow : Window
+    public partial class InstallWindow : Window, IDisposable
     {
+        TaskbarProgressManager? _taskbar;
+
         public InstallWindow()
         {
             InitializeComponent();
+
+            this._taskbar = TaskbarProgressManager.GetAvaloniaTaskbar(this);
             this.Closing += InstallWindow_Closing;
+
+            this.DataContextChanged += (sender, e) =>
+            {
+                if (DataContext is InstallViewModel viewModel)
+                {
+                    viewModel.PropertyChanged += (sender, e) => Dispatcher.UIThread.Invoke(() => ViewModel_PropertyChanged(sender, e));
+                }
+            };
+
 #if DEBUG
             this.AttachDevTools();
 #endif
         }
 
+        public void Dispose()
+        {
+            this._taskbar?.Dispose();
+        }
+
         private async void InstallWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (DataContext is not InstallViewModel viewModel || !viewModel.IsInProgress)
+            if (this.DataContext is not InstallViewModel viewModel || !viewModel.IsInProgress)
             {
                 return;
             }
@@ -44,6 +65,16 @@ namespace TrailsHelper.Views
                 e.Cancel = false;
                 viewModel.DownloadStatus = "Cleaning up...";
                 viewModel.InstallCancel.Cancel();
+            }
+        }
+
+        private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(InstallViewModel.ProgressValue) &&
+                DataContext is InstallViewModel viewModel &&
+                viewModel.IsInProgress)
+            {
+                this._taskbar.ProgressPercentage = viewModel.ProgressValue / 100.0;
             }
         }
     }

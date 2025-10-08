@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using TrailsHelper.Support;

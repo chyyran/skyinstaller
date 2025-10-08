@@ -199,7 +199,12 @@ namespace TrailsHelper.ViewModels
             using var client = new SoraVoiceInstallModel(this.GameModel.Prefix, this.GamePath, this.GameModel.BattleVoiceFile, this.GameModel.Game.Locator.AppId.Value);
             using var wakeScope = await WakeScope.PreventSleep();
 
-            client.ProgressChangedEvent += (_, percent) => this.ProgressValue = percent;
+
+            client.ProgressChangedEvent += (_, percent) =>
+            {
+                this.ProgressValue = percent;
+            };
+
             try
             {
                 var result = await this.DoInstall(client, cancel);
@@ -253,7 +258,7 @@ namespace TrailsHelper.ViewModels
 
         public async Task<bool> ShowInstallDialog()
         {
-            var dialog = new InstallWindow
+            using var dialog = new InstallWindow
             {
                 DataContext = this
             };

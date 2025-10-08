@@ -12,6 +12,8 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <BuiltInComInteropSupport>false</BuiltInComInteropSupport>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableComHosting>True</EnableComHosting>
+
   </PropertyGroup>
 
   <ItemGroup>
