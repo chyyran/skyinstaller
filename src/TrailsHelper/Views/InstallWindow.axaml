@@ -4,7 +4,6 @@
         xmlns:local="using:TrailsHelper.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="500"
          x:Class="TrailsHelper.Views.InstallWindow"
         WindowStartupLocation="CenterOwner"
@@ -80,7 +79,9 @@
         </Grid.RowDefinitions>
         <StackPanel>
           <Label>Installing voice lines and battle voices to</Label>
-          <Label Margin="0 0 0 30" Content="{Binding GamePath}" FontStyle="Italic" FontWeight="DemiBold"/>
+          <Label Content="{Binding GamePath}" FontStyle="Italic" FontWeight="DemiBold"/>
+          <Label Margin="0 0 0 30" >This will install the SoraVoice mod and modify the game files.</Label>
+
           <Label>Installation time will depend on your internet speed.</Label>
           <Label>Closing this window will cancel the installation and revert any changes.</Label>
           <Label Margin="0 20 0 0">Downloading and extracting voice data may take a while.</Label>

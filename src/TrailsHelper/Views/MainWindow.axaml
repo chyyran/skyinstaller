@@ -4,7 +4,6 @@
         xmlns:local="using:TrailsHelper.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         Height="500" Width="900"
         MinHeight="450"
@@ -35,7 +34,7 @@
             MaterialOpacity="0.65" />
       </ExperimentalAcrylicBorder.Material>
     </ExperimentalAcrylicBorder>
-    <local:HomeView DataContext="{CompiledBinding, x:DataType={x:Type vm:MainWindowViewModel}}"/>
+    <local:HomeView DataContext="{CompiledBinding x:DataType={x:Type vm:MainWindowViewModel}}"/>
   </Grid>
 
 </Window>
