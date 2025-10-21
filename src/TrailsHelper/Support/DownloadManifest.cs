@@ -55,6 +55,9 @@ namespace TrailsHelper.Support
         [JsonPropertyName("mod")]
         public Github Mod { get; set; }
 
+        [JsonPropertyName("sha256")]
+        public Dictionary<string, string> Sha256 { get; set; }
+
         [JsonPropertyName("scripts")]
         public Github Scripts { get; set; }
 

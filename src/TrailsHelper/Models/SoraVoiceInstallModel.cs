@@ -15,6 +15,7 @@ using Amazon.S3;
 using Amazon.Runtime;
 using Amazon;
 using System.Linq;
+using System.Security.Cryptography;
 using Gameloop.Vdf;
 using Gameloop.Vdf.Linq;
 using TrailsHelper.Support.HttpProgressHandler;
@@ -311,6 +312,37 @@ namespace TrailsHelper.Models
                 var voiceFiles = torrent.Files.Single(f => f.Path.StartsWith(asset));
                 return File.OpenRead(voiceFiles.FullPath);
             });
+        }
+
+        public async Task VerifyMod(Stream modStream, DownloadManifest manifest, CancellationToken cancel = default)
+        {
+            var archive = ArchiveFactory.Open(modStream);
+            foreach (var entry in archive.Entries)
+            {
+                // Only need ot validate .dll files
+                if (entry.Key?.EndsWith(".dll") != true)
+                {
+                    continue;
+                }
+
+                if (!manifest.Sha256.TryGetValue(entry.Key, out var expectedHash))
+                {
+                    throw new IOException("Unexpected library file in mod archive");
+                }
+
+                var actualHash = await SHA256.HashDataAsync(entry.OpenEntryStream(), cancel);
+                string actualHashString = BitConverter.ToString(actualHash)
+                    .Replace("-", string.Empty)
+                    .ToLowerInvariant();
+
+                if (actualHashString != expectedHash)
+                {
+                    throw new IOException($"Could not properly validate {entry.Key}.");
+                }
+            }
+
+            // Reset stream after
+            modStream.Seek(0, SeekOrigin.Begin);
         }
 
         public async Task ExtractToGameRoot(Stream modStream, CancellationToken cancel = default)
