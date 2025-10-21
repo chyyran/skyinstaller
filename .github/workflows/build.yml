@@ -53,7 +53,7 @@ jobs:
         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
         organization-id: '${{ secrets.SIGNPATH_ORG_ID }}'
         project-slug: 'skyinstaller'
-        signing-policy-slug: 'test-signing'
+        signing-policy-slug: 'release-signing'
         github-artifact-id: '${{ needs.build.outputs.release-artifact-id }}'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         wait-for-completion: true
