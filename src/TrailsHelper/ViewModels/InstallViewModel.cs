@@ -151,6 +151,9 @@ namespace TrailsHelper.ViewModels
                 this.DownloadStatus = "Downloading SoraVoiceLite...";
                 using Stream modArchive = await client.DownloadLatestMod(manifest, cancel);
 
+                this.DownloadStatus = "Validating SoraVoiceLite...";
+                await client.VerifyMod(modArchive!, manifest, cancel);
+
                 this.DownloadStatus = "Extracting SoraVoiceLite...";
                 await client.ExtractToGameRoot(modArchive!, cancel);
 
