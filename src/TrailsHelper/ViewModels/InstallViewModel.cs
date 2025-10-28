@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TrailsHelper.Models;
@@ -173,7 +174,7 @@ namespace TrailsHelper.ViewModels
                 this.DownloadStatus = "Extracting voice data...";
                 await client.ExtractToVoiceFolder(voiceArchive, cancel);
 
-                if (this.IsSteam && Steam.IsSteamOS)
+                if (this.IsSteam && RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
                     this.DownloadStatus = "Setting Proton Launch Arguments...";
                     await client.WriteSteamArgsOnLinux();
