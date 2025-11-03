@@ -83,7 +83,12 @@ namespace TrailsHelper
             }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share", "Steam");
+                var steam_link = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam", "steam");
+                if (Directory.Exists(steam_link))
+                {
+                    var steam_dir = Directory.ResolveLinkTarget(steam_link, true);
+                    if (steam_dir is DirectoryInfo info) { return info.FullName; }
+                }
             }
             return null;
         }
