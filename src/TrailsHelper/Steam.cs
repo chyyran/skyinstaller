@@ -20,7 +20,7 @@ namespace TrailsHelper
             {
                 // Linux Steam API doesn't like Init with hardcoded int so we use a steam_appid.txt hack.
                 FileStream? steamId = null;
-                if (Steam.IsSteamOS)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
                     steamId = File.Open(Path.Combine(Environment.CurrentDirectory, "steam_appid.txt"), new FileStreamOptions()
                     {
@@ -55,19 +55,6 @@ namespace TrailsHelper
             });
         }
 
-        public static bool IsSteamOS
-        {
-            get
-            {
-                // .NET 9 supports 'SteamOS' identifier
-                return RuntimeInformation.OSDescription == "SteamOS"
-                        // Legacy detection (very bad way of checking for SteamOS but we can't use the Steam API at this point)
-                        || (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                            && RuntimeInformation.OSDescription.Contains("valve")
-                            && RuntimeInformation.OSDescription.Contains("neptune"));
-                    }
-        }
-
         public static string? GetSteamExePath()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -76,7 +63,7 @@ namespace TrailsHelper
                 return key?.GetValue("SteamExe") as string;
             }
 
-            if (Steam.IsSteamOS)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 return "/usr/bin/steam";
             }
@@ -94,9 +81,14 @@ namespace TrailsHelper
                 var key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Valve\\Steam");
                 return key?.GetValue("SteamPath") as string;
             }
-            if (Steam.IsSteamOS)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local", "share", "Steam");
+                var steam_link = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam", "steam");
+                if (Directory.Exists(steam_link))
+                {
+                    var steam_dir = Directory.ResolveLinkTarget(steam_link, true);
+                    if (steam_dir is DirectoryInfo info) { return info.FullName; }
+                }
             }
             return null;
         }
